@@ -1,0 +1,1181 @@
+[
+  {
+    "fused_risk_score": 0.9731,
+    "components": {
+      "supervised_score": 1.0,
+      "anomaly_score": 0.9403,
+      "supervised_weight": 0.55,
+      "anomaly_weight": 0.45,
+      "supervised_contribution": 0.55,
+      "anomaly_contribution": 0.4231,
+      "dominant_component": "supervised",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Init_Win_bytes_forward",
+        "readable_feature": "forward initial TCP window size",
+        "value": 229.0,
+        "shap_value": 1.4906,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Fwd Packet Length Std",
+        "readable_feature": "forward packet size variance",
+        "value": 10.6066,
+        "shap_value": 0.7967,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Bwd Packets/s",
+        "readable_feature": "backward packet rate",
+        "value": 0.0476,
+        "shap_value": -0.7795,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "min_seg_size_forward",
+        "readable_feature": "minimum segment size forward",
+        "value": 32.0,
+        "shap_value": 0.5228,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Fwd Packets/s",
+        "readable_feature": "forward packet rate",
+        "value": 0.0952,
+        "shap_value": -0.4672,
+        "direction": "decreases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "SYN Flag Count",
+          "readable_feature": "SYN connection handshake count",
+          "value": 1.0,
+          "shap_value": -0.3168,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd PSH Flags",
+          "readable_feature": "forward PSH flag count",
+          "value": 1.0,
+          "shap_value": -0.2799,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd IAT Min",
+          "readable_feature": "min forward inter-arrival gap",
+          "value": 21000000.0,
+          "shap_value": -0.2711,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd IAT Mean",
+          "readable_feature": "mean forward inter-arrival time",
+          "value": 21000000.0,
+          "shap_value": -0.1906,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Flow IAT Mean",
+          "readable_feature": "mean inter-packet arrival time",
+          "value": 10500000.0,
+          "shap_value": -0.1876,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Fwd IAT Std",
+          "readable_feature": "forward inter-arrival variance",
+          "value": 0.0,
+          "reconstruction_error": 2.0442
+        },
+        {
+          "feature": "Fwd IAT Min",
+          "readable_feature": "min forward inter-arrival gap",
+          "value": 21000000.0,
+          "reconstruction_error": 1.8546
+        },
+        {
+          "feature": "Init_Win_bytes_forward",
+          "readable_feature": "forward initial TCP window size",
+          "value": 229.0,
+          "reconstruction_error": 0.7256
+        },
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 0.0,
+          "reconstruction_error": 0.4658
+        },
+        {
+          "feature": "Flow IAT Mean",
+          "readable_feature": "mean inter-packet arrival time",
+          "value": 10500000.0,
+          "reconstruction_error": 0.462
+        }
+      ]
+    },
+    "sentence": "Intrusion Alert (Risk: 0.97) driven primarily by Supervised Classifier (supervised contribution 0.55 vs anomaly 0.42, weight 0.55). The flow resembles attack patterns seen in training characterized by elevated forward initial TCP window size, forward packet size variance, and backward packet rate; however, this may not hold for new attack types.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0281,
+      "xgb_shap_sum": 2.9846,
+      "iforest_base_value": 11.6645,
+      "iforest_shap_sum": -2.5671
+    },
+    "example_type": "True Positive",
+    "family": "DoS",
+    "true_label": "DoS"
+  },
+  {
+    "fused_risk_score": 0.451,
+    "components": {
+      "supervised_score": 0.007,
+      "anomaly_score": 0.9936,
+      "supervised_weight": 0.55,
+      "anomaly_weight": 0.45,
+      "supervised_contribution": 0.0039,
+      "anomaly_contribution": 0.4471,
+      "dominant_component": "anomaly",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Bwd Packets/s",
+        "readable_feature": "backward packet rate",
+        "value": 0.0966,
+        "shap_value": -1.1201,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "PSH Flag Count",
+        "readable_feature": "PSH push flag count",
+        "value": 1.0,
+        "shap_value": 0.7463,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Flow IAT Min",
+        "readable_feature": "min inter-packet arrival gap",
+        "value": 511.0,
+        "shap_value": -0.5331,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Fwd IAT Mean",
+        "readable_feature": "mean forward inter-arrival time",
+        "value": 0.0,
+        "shap_value": -0.509,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Fwd IAT Total",
+        "readable_feature": "total forward inter-arrival time",
+        "value": 0.0,
+        "shap_value": -0.4968,
+        "direction": "decreases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "Bwd IAT Min",
+          "readable_feature": "min backward inter-arrival gap",
+          "value": 20700000.0,
+          "shap_value": -0.3367,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd IAT Max",
+          "readable_feature": "max backward inter-arrival gap",
+          "value": 20700000.0,
+          "shap_value": -0.2692,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd Packet Length Std",
+          "readable_feature": "backward packet size variance",
+          "value": 251.73,
+          "shap_value": -0.2588,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "shap_value": -0.231,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 1.0,
+          "shap_value": -0.2103,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Init_Win_bytes_backward",
+          "readable_feature": "backward initial TCP window size",
+          "value": 229.0,
+          "reconstruction_error": 2.1433
+        },
+        {
+          "feature": "Flow IAT Std",
+          "readable_feature": "inter-packet arrival variance",
+          "value": 14600000.0,
+          "reconstruction_error": 1.4889
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "reconstruction_error": 1.4316
+        },
+        {
+          "feature": "Fwd Packet Length Max",
+          "readable_feature": "max forward packet size",
+          "value": 0.0,
+          "reconstruction_error": 1.4257
+        },
+        {
+          "feature": "Bwd IAT Min",
+          "readable_feature": "min backward inter-arrival gap",
+          "value": 20700000.0,
+          "reconstruction_error": 1.3154
+        }
+      ]
+    },
+    "sentence": "Normal Network Flow (Risk: 0.45): Score is below detection threshold (0.50); no strong evidence of attack in netflow timing, packet sizes, or connection dynamics.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0281,
+      "xgb_shap_sum": -2.1528,
+      "iforest_base_value": 11.6645,
+      "iforest_shap_sum": -4.3698
+    },
+    "example_type": "False Positive",
+    "family": "DoS",
+    "true_label": "Benign"
+  },
+  {
+    "fused_risk_score": 0.2176,
+    "components": {
+      "supervised_score": 0.0,
+      "anomaly_score": 0.4836,
+      "supervised_weight": 0.55,
+      "anomaly_weight": 0.45,
+      "supervised_contribution": 0.0,
+      "anomaly_contribution": 0.2176,
+      "dominant_component": "anomaly",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Bwd Packets/s",
+        "readable_feature": "backward packet rate",
+        "value": 0.0,
+        "shap_value": -1.4787,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Init_Win_bytes_forward",
+        "readable_feature": "forward initial TCP window size",
+        "value": 296.0,
+        "shap_value": -1.1804,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "PSH Flag Count",
+        "readable_feature": "PSH push flag count",
+        "value": 0.0,
+        "shap_value": -0.8221,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "min_seg_size_forward",
+        "readable_feature": "minimum segment size forward",
+        "value": 32.0,
+        "shap_value": 0.5163,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Flow Bytes/s",
+        "readable_feature": "flow byte throughput",
+        "value": 0.0,
+        "shap_value": -0.3473,
+        "direction": "decreases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "shap_value": -0.1453,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd Packet Length Mean",
+          "readable_feature": "mean forward packet size",
+          "value": 0.0,
+          "shap_value": -0.1435,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Total Length of Fwd Packets",
+          "readable_feature": "forward payload volume",
+          "value": 0.0,
+          "shap_value": -0.1101,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Subflow Bwd Packets",
+          "readable_feature": "subflow backward packet count",
+          "value": 0.0,
+          "shap_value": -0.1099,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Max Packet Length",
+          "readable_feature": "maximum packet size",
+          "value": 0.0,
+          "shap_value": -0.0939,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Flow Bytes/s",
+          "readable_feature": "flow byte throughput",
+          "value": 0.0,
+          "reconstruction_error": 0.097
+        },
+        {
+          "feature": "Init_Win_bytes_forward",
+          "readable_feature": "forward initial TCP window size",
+          "value": 296.0,
+          "reconstruction_error": 0.06
+        },
+        {
+          "feature": "act_data_pkt_fwd",
+          "readable_feature": "forward packet count with valid payload",
+          "value": 0.0,
+          "reconstruction_error": 0.0204
+        },
+        {
+          "feature": "Bwd Packets/s",
+          "readable_feature": "backward packet rate",
+          "value": 0.0,
+          "reconstruction_error": 0.018
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "reconstruction_error": 0.017
+        }
+      ]
+    },
+    "sentence": "Normal Network Flow (Risk: 0.22): Score is below detection threshold (0.50); no strong evidence of attack in netflow timing, packet sizes, or connection dynamics.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0281,
+      "xgb_shap_sum": -3.4777,
+      "iforest_base_value": 11.6645,
+      "iforest_shap_sum": -0.6128
+    },
+    "example_type": "Missed Attack (FN)",
+    "family": "DoS",
+    "true_label": "DoS"
+  },
+  {
+    "fused_risk_score": 0.9825,
+    "components": {
+      "supervised_score": 1.0,
+      "anomaly_score": 0.9708,
+      "supervised_weight": 0.4,
+      "anomaly_weight": 0.6,
+      "supervised_contribution": 0.4,
+      "anomaly_contribution": 0.5825,
+      "dominant_component": "anomaly",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Init_Win_bytes_backward",
+        "readable_feature": "backward initial TCP window size",
+        "value": 227.0,
+        "shap_value": 0.918,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Flow Duration",
+        "readable_feature": "flow duration",
+        "value": 11008632.0,
+        "shap_value": 0.8291,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Fwd Header Length",
+        "readable_feature": "forward header size",
+        "value": 136.0,
+        "shap_value": 0.619,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Min Packet Length",
+        "readable_feature": "minimum packet size",
+        "value": 0.0,
+        "shap_value": 0.5642,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Fwd IAT Mean",
+        "readable_feature": "mean forward inter-arrival time",
+        "value": 3669544.0,
+        "shap_value": 0.4301,
+        "direction": "increases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "Bwd IAT Min",
+          "readable_feature": "min backward inter-arrival gap",
+          "value": 6004620.0,
+          "shap_value": -0.3133,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd IAT Max",
+          "readable_feature": "max backward inter-arrival gap",
+          "value": 6004620.0,
+          "shap_value": -0.1726,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Idle Max",
+          "readable_feature": "maximum idle connection time",
+          "value": 6003976.0,
+          "shap_value": -0.1649,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd IAT Mean",
+          "readable_feature": "mean backward inter-arrival time",
+          "value": 6004620.0,
+          "shap_value": -0.1576,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd Packet Length Mean",
+          "readable_feature": "mean backward packet size",
+          "value": 0.0,
+          "shap_value": -0.1545,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Down/Up Ratio",
+          "readable_feature": "download-to-upload ratio",
+          "value": 0.0,
+          "reconstruction_error": 0.7426
+        },
+        {
+          "feature": "Fwd IAT Min",
+          "readable_feature": "min forward inter-arrival gap",
+          "value": 567.0,
+          "reconstruction_error": 0.4675
+        },
+        {
+          "feature": "Idle Min",
+          "readable_feature": "minimum idle connection time",
+          "value": 6003976.0,
+          "reconstruction_error": 0.3836
+        },
+        {
+          "feature": "Bwd IAT Std",
+          "readable_feature": "backward inter-arrival variance",
+          "value": 0.0,
+          "reconstruction_error": 0.3711
+        },
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 1.0,
+          "reconstruction_error": 0.3625
+        }
+      ]
+    },
+    "sentence": "Intrusion Alert (Risk: 0.98) driven primarily by Mean Anomaly (IForest + Autoencoder) anomaly detection (anomaly contribution 0.58 vs supervised 0.40, weight 0.60). The flow exhibited anomalous network characteristics in download-to-upload ratio, min forward inter-arrival gap, and minimum idle connection time relative to baseline benign traffic patterns, indicating novel or out-of-distribution network behavior rather than known signatures.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0252,
+      "xgb_shap_sum": 5.0076,
+      "iforest_base_value": 11.3851,
+      "iforest_shap_sum": -3.7213
+    },
+    "example_type": "True Positive",
+    "family": "PortScan",
+    "true_label": "PortScan"
+  },
+  {
+    "fused_risk_score": 0.9893,
+    "components": {
+      "supervised_score": 0.9767,
+      "anomaly_score": 0.9976,
+      "supervised_weight": 0.4,
+      "anomaly_weight": 0.6,
+      "supervised_contribution": 0.3907,
+      "anomaly_contribution": 0.5986,
+      "dominant_component": "anomaly",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Active Min",
+        "readable_feature": "minimum active connection time",
+        "value": 7134868.0,
+        "shap_value": -0.941,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Fwd Header Length",
+        "readable_feature": "forward header size",
+        "value": 280.0,
+        "shap_value": 0.8165,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Init_Win_bytes_backward",
+        "readable_feature": "backward initial TCP window size",
+        "value": -1.0,
+        "shap_value": -0.6325,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Flow Duration",
+        "readable_feature": "flow duration",
+        "value": 63710912.0,
+        "shap_value": 0.5876,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "min_seg_size_forward",
+        "readable_feature": "minimum segment size forward",
+        "value": 40.0,
+        "shap_value": 0.4568,
+        "direction": "increases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "Fwd IAT Std",
+          "readable_feature": "forward inter-arrival variance",
+          "value": 11900000.0,
+          "shap_value": -0.2696,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Active Max",
+          "readable_feature": "maximum active connection time",
+          "value": 7134868.0,
+          "shap_value": -0.2062,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Total Length of Fwd Packets",
+          "readable_feature": "forward payload volume",
+          "value": 0.0,
+          "shap_value": -0.202,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Idle Mean",
+          "readable_feature": "idle connection time mean",
+          "value": 18900000.0,
+          "shap_value": -0.1758,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Idle Min",
+          "readable_feature": "minimum idle connection time",
+          "value": 8192008.0,
+          "shap_value": -0.168,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Idle Std",
+          "readable_feature": "idle connection time variance",
+          "value": 12300000.0,
+          "reconstruction_error": 8.3536
+        },
+        {
+          "feature": "Init_Win_bytes_backward",
+          "readable_feature": "backward initial TCP window size",
+          "value": -1.0,
+          "reconstruction_error": 1.6242
+        },
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 1.0,
+          "reconstruction_error": 1.5831
+        },
+        {
+          "feature": "Active Std",
+          "readable_feature": "active connection time variance",
+          "value": 0.0,
+          "reconstruction_error": 1.4678
+        },
+        {
+          "feature": "Down/Up Ratio",
+          "readable_feature": "download-to-upload ratio",
+          "value": 0.0,
+          "reconstruction_error": 1.1824
+        }
+      ]
+    },
+    "sentence": "Intrusion Alert (Risk: 0.99) driven primarily by Mean Anomaly (IForest + Autoencoder) anomaly detection (anomaly contribution 0.60 vs supervised 0.39, weight 0.60). The flow exhibited anomalous network characteristics in idle connection time variance, backward initial TCP window size, and PSH push flag count relative to baseline benign traffic patterns, indicating novel or out-of-distribution network behavior rather than known signatures.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0252,
+      "xgb_shap_sum": 2.4805,
+      "iforest_base_value": 11.3851,
+      "iforest_shap_sum": -4.7647
+    },
+    "example_type": "False Positive",
+    "family": "PortScan",
+    "true_label": "Benign"
+  },
+  {
+    "fused_risk_score": 0.2633,
+    "components": {
+      "supervised_score": 0.0015,
+      "anomaly_score": 0.4378,
+      "supervised_weight": 0.4,
+      "anomaly_weight": 0.6,
+      "supervised_contribution": 0.0006,
+      "anomaly_contribution": 0.2627,
+      "dominant_component": "anomaly",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Init_Win_bytes_backward",
+        "readable_feature": "backward initial TCP window size",
+        "value": 260.0,
+        "shap_value": -1.2616,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Init_Win_bytes_forward",
+        "readable_feature": "forward initial TCP window size",
+        "value": 386.0,
+        "shap_value": -0.9549,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Fwd IAT Mean",
+        "readable_feature": "mean forward inter-arrival time",
+        "value": 0.0,
+        "shap_value": -0.8794,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Flow Duration",
+        "readable_feature": "flow duration",
+        "value": 51.0,
+        "shap_value": -0.6474,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "min_seg_size_forward",
+        "readable_feature": "minimum segment size forward",
+        "value": 32.0,
+        "shap_value": 0.3902,
+        "direction": "increases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "URG Flag Count",
+          "readable_feature": "URG urgent packet count",
+          "value": 1.0,
+          "shap_value": -0.2447,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd Packet Length Mean",
+          "readable_feature": "mean forward packet size",
+          "value": 0.0,
+          "shap_value": -0.1173,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Total Length of Fwd Packets",
+          "readable_feature": "forward payload volume",
+          "value": 0.0,
+          "shap_value": -0.1011,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "shap_value": -0.0942,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Min Packet Length",
+          "readable_feature": "minimum packet size",
+          "value": 0.0,
+          "shap_value": -0.0531,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Flow Bytes/s",
+          "readable_feature": "flow byte throughput",
+          "value": 0.0,
+          "reconstruction_error": 0.137
+        },
+        {
+          "feature": "Init_Win_bytes_backward",
+          "readable_feature": "backward initial TCP window size",
+          "value": 260.0,
+          "reconstruction_error": 0.0473
+        },
+        {
+          "feature": "Fwd IAT Min",
+          "readable_feature": "min forward inter-arrival gap",
+          "value": 0.0,
+          "reconstruction_error": 0.0274
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "reconstruction_error": 0.027
+        },
+        {
+          "feature": "Bwd Packets/s",
+          "readable_feature": "backward packet rate",
+          "value": 19607.8431,
+          "reconstruction_error": 0.0192
+        }
+      ]
+    },
+    "sentence": "Normal Network Flow (Risk: 0.26): Score is below detection threshold (0.50); no strong evidence of attack in netflow timing, packet sizes, or connection dynamics.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0252,
+      "xgb_shap_sum": -3.8996,
+      "iforest_base_value": 11.3851,
+      "iforest_shap_sum": 0.5154
+    },
+    "example_type": "Missed Attack (FN)",
+    "family": "PortScan",
+    "true_label": "PortScan"
+  },
+  {
+    "fused_risk_score": 0.9733,
+    "components": {
+      "supervised_score": 0.9954,
+      "anomaly_score": 0.9323,
+      "supervised_weight": 0.65,
+      "anomaly_weight": 0.35,
+      "supervised_contribution": 0.647,
+      "anomaly_contribution": 0.3263,
+      "dominant_component": "supervised",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Packet Length Mean",
+        "readable_feature": "average packet length",
+        "value": 0.0,
+        "shap_value": 1.1426,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Bwd Packet Length Std",
+        "readable_feature": "backward packet size variance",
+        "value": 0.0,
+        "shap_value": -0.839,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "ACK Flag Count",
+        "readable_feature": "ACK acknowledgment packet count",
+        "value": 0.0,
+        "shap_value": 0.5003,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Flow IAT Mean",
+        "readable_feature": "mean inter-packet arrival time",
+        "value": 651.0,
+        "shap_value": -0.4727,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Fwd IAT Min",
+        "readable_feature": "min forward inter-arrival gap",
+        "value": 904.0,
+        "shap_value": 0.4396,
+        "direction": "increases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 1.0,
+          "shap_value": -0.3471,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd IAT Min",
+          "readable_feature": "min backward inter-arrival gap",
+          "value": 1799.0,
+          "shap_value": -0.3015,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Total Length of Fwd Packets",
+          "readable_feature": "forward payload volume",
+          "value": 0.0,
+          "shap_value": -0.2134,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd IAT Max",
+          "readable_feature": "max backward inter-arrival gap",
+          "value": 1799.0,
+          "shap_value": -0.1662,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd IAT Total",
+          "readable_feature": "total backward inter-arrival time",
+          "value": 1799.0,
+          "shap_value": -0.1491,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 1.0,
+          "reconstruction_error": 0.8657
+        },
+        {
+          "feature": "Bwd IAT Min",
+          "readable_feature": "min backward inter-arrival gap",
+          "value": 1799.0,
+          "reconstruction_error": 0.6992
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 0.0,
+          "reconstruction_error": 0.5406
+        },
+        {
+          "feature": "min_seg_size_forward",
+          "readable_feature": "minimum segment size forward",
+          "value": 32.0,
+          "reconstruction_error": 0.4449
+        },
+        {
+          "feature": "Fwd IAT Min",
+          "readable_feature": "min forward inter-arrival gap",
+          "value": 904.0,
+          "reconstruction_error": 0.3465
+        }
+      ]
+    },
+    "sentence": "Intrusion Alert (Risk: 0.97) driven primarily by Supervised Classifier (supervised contribution 0.65 vs anomaly 0.33, weight 0.65). The flow resembles attack patterns seen in training characterized by elevated average packet length, backward packet size variance, and ACK acknowledgment packet count; however, this may not hold for new attack types.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0095,
+      "xgb_shap_sum": 2.9406,
+      "iforest_base_value": 11.5304,
+      "iforest_shap_sum": -2.6382
+    },
+    "example_type": "True Positive",
+    "family": "BruteForce",
+    "true_label": "BruteForce"
+  },
+  {
+    "fused_risk_score": 0.9959,
+    "components": {
+      "supervised_score": 0.9954,
+      "anomaly_score": 0.9968,
+      "supervised_weight": 0.65,
+      "anomaly_weight": 0.35,
+      "supervised_contribution": 0.647,
+      "anomaly_contribution": 0.3489,
+      "dominant_component": "supervised",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Flow IAT Mean",
+        "readable_feature": "mean inter-packet arrival time",
+        "value": 10600000.0,
+        "shap_value": 1.5212,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Packet Length Mean",
+        "readable_feature": "average packet length",
+        "value": 0.0,
+        "shap_value": 1.1738,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Init_Win_bytes_backward",
+        "readable_feature": "backward initial TCP window size",
+        "value": -1.0,
+        "shap_value": -0.8033,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Fwd Header Length",
+        "readable_feature": "forward header size",
+        "value": 280.0,
+        "shap_value": 0.6942,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Fwd IAT Std",
+        "readable_feature": "forward inter-arrival variance",
+        "value": 11900000.0,
+        "shap_value": -0.5199,
+        "direction": "decreases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "Idle Std",
+          "readable_feature": "idle connection time variance",
+          "value": 12300000.0,
+          "shap_value": -0.3114,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Active Max",
+          "readable_feature": "maximum active connection time",
+          "value": 7134868.0,
+          "shap_value": -0.2571,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Active Min",
+          "readable_feature": "minimum active connection time",
+          "value": 7134868.0,
+          "shap_value": -0.2254,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd IAT Std",
+          "readable_feature": "forward inter-arrival variance",
+          "value": 11900000.0,
+          "shap_value": -0.202,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "PSH Flag Count",
+          "readable_feature": "PSH push flag count",
+          "value": 1.0,
+          "shap_value": -0.2002,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Init_Win_bytes_backward",
+          "readable_feature": "backward initial TCP window size",
+          "value": -1.0,
+          "reconstruction_error": 4.4189
+        },
+        {
+          "feature": "Active Std",
+          "readable_feature": "active connection time variance",
+          "value": 0.0,
+          "reconstruction_error": 3.2542
+        },
+        {
+          "feature": "Idle Std",
+          "readable_feature": "idle connection time variance",
+          "value": 12300000.0,
+          "reconstruction_error": 3.038
+        },
+        {
+          "feature": "Bwd Packets/s",
+          "readable_feature": "backward packet rate",
+          "value": 0.0,
+          "reconstruction_error": 1.3512
+        },
+        {
+          "feature": "Flow IAT Min",
+          "readable_feature": "min inter-packet arrival gap",
+          "value": 1022863.0,
+          "reconstruction_error": 1.0671
+        }
+      ]
+    },
+    "sentence": "Intrusion Alert (Risk: 1.00) driven primarily by Supervised Classifier (supervised contribution 0.65 vs anomaly 0.35, weight 0.65). The flow resembles attack patterns seen in training characterized by elevated mean inter-packet arrival time, average packet length, and backward initial TCP window size; however, this may not hold for new attack types.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0095,
+      "xgb_shap_sum": 3.3154,
+      "iforest_base_value": 11.5304,
+      "iforest_shap_sum": -4.6911
+    },
+    "example_type": "False Positive",
+    "family": "BruteForce",
+    "true_label": "Benign"
+  },
+  {
+    "fused_risk_score": 0.1499,
+    "components": {
+      "supervised_score": 0.0,
+      "anomaly_score": 0.4283,
+      "supervised_weight": 0.65,
+      "anomaly_weight": 0.35,
+      "supervised_contribution": 0.0,
+      "anomaly_contribution": 0.1499,
+      "dominant_component": "anomaly",
+      "anomaly_signal_type": "Mean Anomaly (IForest + Autoencoder)"
+    },
+    "supervised_explanation": [
+      {
+        "feature": "Init_Win_bytes_backward",
+        "readable_feature": "backward initial TCP window size",
+        "value": 247.0,
+        "shap_value": -1.3573,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Init_Win_bytes_forward",
+        "readable_feature": "forward initial TCP window size",
+        "value": 259.0,
+        "shap_value": 0.8068,
+        "direction": "increases_risk"
+      },
+      {
+        "feature": "Fwd Header Length",
+        "readable_feature": "forward header size",
+        "value": 32.0,
+        "shap_value": -0.7397,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "Bwd Packet Length Std",
+        "readable_feature": "backward packet size variance",
+        "value": 0.0,
+        "shap_value": -0.6885,
+        "direction": "decreases_risk"
+      },
+      {
+        "feature": "ACK Flag Count",
+        "readable_feature": "ACK acknowledgment packet count",
+        "value": 1.0,
+        "shap_value": -0.6806,
+        "direction": "decreases_risk"
+      }
+    ],
+    "anomaly_explanation": {
+      "iforest_top5": [
+        {
+          "feature": "URG Flag Count",
+          "readable_feature": "URG urgent packet count",
+          "value": 1.0,
+          "shap_value": -0.1698,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "shap_value": -0.1329,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Fwd Packet Length Mean",
+          "readable_feature": "mean forward packet size",
+          "value": 0.0,
+          "shap_value": -0.1291,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Total Length of Fwd Packets",
+          "readable_feature": "forward payload volume",
+          "value": 0.0,
+          "shap_value": -0.0952,
+          "direction": "increases_anomaly"
+        },
+        {
+          "feature": "Bwd Packets/s",
+          "readable_feature": "backward packet rate",
+          "value": 3921.5686,
+          "shap_value": -0.0787,
+          "direction": "increases_anomaly"
+        }
+      ],
+      "autoencoder_top5": [
+        {
+          "feature": "Init_Win_bytes_backward",
+          "readable_feature": "backward initial TCP window size",
+          "value": 247.0,
+          "reconstruction_error": 0.0498
+        },
+        {
+          "feature": "Flow Bytes/s",
+          "readable_feature": "flow byte throughput",
+          "value": 0.0,
+          "reconstruction_error": 0.0394
+        },
+        {
+          "feature": "URG Flag Count",
+          "readable_feature": "URG urgent packet count",
+          "value": 1.0,
+          "reconstruction_error": 0.0331
+        },
+        {
+          "feature": "ACK Flag Count",
+          "readable_feature": "ACK acknowledgment packet count",
+          "value": 1.0,
+          "reconstruction_error": 0.0312
+        },
+        {
+          "feature": "Init_Win_bytes_forward",
+          "readable_feature": "forward initial TCP window size",
+          "value": 259.0,
+          "reconstruction_error": 0.0183
+        }
+      ]
+    },
+    "sentence": "Normal Network Flow (Risk: 0.15): Score is below detection threshold (0.50); no strong evidence of attack in netflow timing, packet sizes, or connection dynamics.",
+    "shap_diagnostics": {
+      "xgb_base_value": -0.0095,
+      "xgb_shap_sum": -3.6664,
+      "iforest_base_value": 11.5304,
+      "iforest_shap_sum": 0.2772
+    },
+    "example_type": "Missed Attack (FN)",
+    "family": "BruteForce",
+    "true_label": "BruteForce"
+  }
+]

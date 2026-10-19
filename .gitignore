@@ -1,0 +1,36 @@
+# Data
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Environment & Secrets
+.env
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large artifacts & Models
+*.parquet
+*.joblib
+results/models/
+results/unsw_nb15/models/
+scratch/
+.pytest_cache/
+

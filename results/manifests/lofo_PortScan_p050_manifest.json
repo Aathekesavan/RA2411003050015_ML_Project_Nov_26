@@ -1,0 +1,37 @@
+{
+  "fold_name": "LOFO_PortScan",
+  "held_out_family": "PortScan",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 0.05,
+  "subsampled_side": "benign",
+  "is_low_power": false,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_PortScan.joblib",
+  "split_row_counts": {
+    "train": 37537,
+    "val": 12512,
+    "test": 39120
+  },
+  "class_counts": {
+    "train": {
+      "Benign": 23983,
+      "BruteForce": 6862,
+      "DoS": 6692
+    },
+    "val": {
+      "Benign": 7994,
+      "BruteForce": 2288,
+      "DoS": 2230
+    },
+    "test": {
+      "Benign": 37164,
+      "PortScan": 1956
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "9c9e51269f21a2fdadd1f9422f7d592eb33168b2d731591740ad6bc8d3e479d3",
+    "val": "3ed5d056d6d347046d179d9062b03ece20e3c66bb0d6f7421de9fe1de96a5a2b",
+    "test": "49ae53bcc7dc3ef2eac6ec2ea45e060f98ebcfc275e56511df1fc053fceff81a"
+  },
+  "multi_seed_runs": []
+}

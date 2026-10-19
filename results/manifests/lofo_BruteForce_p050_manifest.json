@@ -1,0 +1,37 @@
+{
+  "fold_name": "LOFO_BruteForce",
+  "held_out_family": "BruteForce",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 0.049999,
+  "subsampled_side": "attack",
+  "is_low_power": false,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_BruteForce.joblib",
+  "split_row_counts": {
+    "train": 32142,
+    "val": 10713,
+    "test": 105263
+  },
+  "class_counts": {
+    "train": {
+      "Benign": 23983,
+      "DoS": 6692,
+      "PortScan": 1467
+    },
+    "val": {
+      "Benign": 7994,
+      "DoS": 2230,
+      "PortScan": 489
+    },
+    "test": {
+      "Benign": 100000,
+      "BruteForce": 5263
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "e2c2adf7279f5e04f18bffd0020e6690c3f39a5748e0177e92fdadb441547471",
+    "val": "48a6f7a4f735afd51636867159d93131e4bb161f9cc13de3f5ebebabe7b60862",
+    "test": "62e55e51f4861e75b7e0fd604f028470880b9ca6562a83b945fe09bfa4585981"
+  },
+  "multi_seed_runs": []
+}

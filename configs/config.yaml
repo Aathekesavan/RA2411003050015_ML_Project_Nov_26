@@ -1,0 +1,100 @@
+# SentinelX-Shift Configuration
+# Deterministic seeds, paths, feature engineering, and LOFO protocol settings
+
+global_settings:
+  random_seed: 42
+  environment: "development"
+  log_level: "INFO"
+
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  output_parquet: "data/processed/cicids2017_sample60k.parquet"
+  
+  # Sampling strategy: preserve all rare families (<20,000 flows) and subsample Benign/DoS to ~60,000 total
+  target_total_rows: 60000
+  rare_family_threshold: 20000
+  active_attack_families:
+    - "DoS"
+    - "PortScan"
+    - "BruteForce"
+  include_benign: true
+
+  # Identifiers and leaky columns to drop unconditionally
+  leaky_columns:
+    - "Flow ID"
+    - "Source IP"
+    - "Source Port"
+    - "Destination IP"
+    - "Destination Port"
+    - "Timestamp"
+    - "Fwd Header Length.1"
+    - "Fwd Header Length_duplicated_0"
+    - "Unnamed: 0"
+
+  # Canonical label mapping
+  label_mapping:
+    "BENIGN": "Benign"
+    "DoS Hulk": "DoS"
+    "DoS GoldenEye": "DoS"
+    "DoS slowloris": "DoS"
+    "DoS Slowhttptest": "DoS"
+    "Heartbleed": "DoS"
+    "PortScan": "PortScan"
+    "FTP-Patator": "BruteForce"
+    "SSH-Patator": "BruteForce"
+    "DDoS": "DDoS"
+    "Bot": "Bot"
+    "Web Attack – Brute Force": "WebAttack"
+    "Web Attack – XSS": "WebAttack"
+    "Web Attack – Sql Injection": "WebAttack"
+    "Infiltration": "Infiltration"
+
+leakage_audit:
+  rounding_levels:
+    - 3
+    - 2
+    - 1
+  hash_precision: 4
+
+evaluation:
+  protocol: "LOFO"  # Leave-One-Attack-Family-Out
+  test_benign_ratio: 0.3
+
+family_groups:
+  cicids2017:
+    min_unique_flows: 500
+    groups:
+      DoS_DDoS:
+        - "DoS"
+        - "DDoS"
+      BruteForce:
+        - "BruteForce"
+      PortScan:
+        - "PortScan"
+      Bot:
+        - "Bot"
+      WebAttack:
+        - "WebAttack"
+    skipped:
+      Infiltration:
+        reason: "Under 500 unique flows (only 36 flows in raw dataset)"
+  unsw_nb15:
+    min_unique_flows: 500
+    groups:
+      Recon_Analysis:
+        - "Reconnaissance"
+        - "Analysis"
+      Exploit_Payload:
+        - "Exploits"
+        - "Shellcode"
+        - "Backdoor"
+        - "Worms"
+      Fuzzers:
+        - "Fuzzers"
+      DoS:
+        - "DoS"
+      Generic:
+        - "Generic"
+    skipped: {}
+

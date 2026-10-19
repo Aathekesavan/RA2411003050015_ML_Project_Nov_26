@@ -1,0 +1,157 @@
+{
+  "fold_name": "LOFO_Generic",
+  "held_out_family": "Generic",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 1.0,
+  "subsampled_side": "attack",
+  "is_low_power": true,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_Generic.joblib",
+  "split_row_counts": {
+    "train": 1041,
+    "val": 347,
+    "test": 1
+  },
+  "class_counts": {
+    "train": {
+      "DoS": 645,
+      "Exploit_Payload": 283,
+      "Recon_Analysis": 113
+    },
+    "val": {
+      "DoS": 215,
+      "Exploit_Payload": 94,
+      "Recon_Analysis": 38
+    },
+    "test": {
+      "Generic": 1
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "26f0543f87a6e36b5bcd395081a400b5036ed08eecc9bea73e610abbd79f8095",
+    "val": "0555c95204aff6ff0b1c8d1303711ec417a1d9297915a3c4f58672941ac43c33",
+    "test": "58817dca1f3d16203079ebabdf0bf8156e3cfcb133f088efd87e6f598ee9c56b"
+  },
+  "multi_seed_runs": [
+    {
+      "seed": 42,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "58817dca1f3d16203079ebabdf0bf8156e3cfcb133f088efd87e6f598ee9c56b"
+    },
+    {
+      "seed": 43,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "cec828b599e3ec67f849f5312841a8a39fa9775b9ccf51f83a5e164c7bd43771"
+    },
+    {
+      "seed": 44,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "39e2ea9247514e1b03109367a7b9c665799724ebe4f930cf1ce3fe3b87d5d89d"
+    },
+    {
+      "seed": 45,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "da2f9ecf8c2a7a6a987b973b05a8759a1c1394f4853ed1d3920f28a17c4a74dc"
+    },
+    {
+      "seed": 46,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "b398a76c745d7bac5baef39c68964f6f5fbc66ccfb860f03d343ea91b8e4ee6c"
+    },
+    {
+      "seed": 47,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "e48eff30dce3d0e7db3db55dd0b7df5bd65f6957c63db1d5b0bd4e2f397289e3"
+    },
+    {
+      "seed": 48,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "51610ae21a20fbbc13f5c1348988308dbda0e160b0686d4b61d130e1165420d0"
+    },
+    {
+      "seed": 49,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "8976acb6e58522042684f2917cf82df0d78bd1b5731e0275766718258968e61b"
+    },
+    {
+      "seed": 50,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "1b8d4f4adcb68eec3f13977822af6baeeaaf5562b578b064e6efb3bddab41318"
+    },
+    {
+      "seed": 51,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "da2f9ecf8c2a7a6a987b973b05a8759a1c1394f4853ed1d3920f28a17c4a74dc"
+    },
+    {
+      "seed": 52,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "9b70d33a9b0727f677c72fcfe492146bf7413cd9940ce9c91cec7581603eee59"
+    },
+    {
+      "seed": 53,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "721521d813ac676c7f404e1a753e6bc42d0df51a8cb3c223b38ad865cafae366"
+    },
+    {
+      "seed": 54,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "0f49d88e585ccd34a50b55686a8337fafc1614dc5c7b032512b3a020e7f6cad1"
+    },
+    {
+      "seed": 55,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "e3bd8e2198a14607362c3890ddffe8a630e71ac0a8ae186f3f05cf0f4005a564"
+    },
+    {
+      "seed": 56,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "cc2b431abda7d4618e3c2a072f4ca0456488603bff287741d4475c1192fc5665"
+    },
+    {
+      "seed": 57,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "902207559482ef17dcf21d3b2974f4dc561c3efc1078cc62f270b18d23083da8"
+    },
+    {
+      "seed": 58,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "8851e2ee9f1987bec74ae518211bcd95e383216fb6aeb26ee3be64a5728fe117"
+    },
+    {
+      "seed": 59,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "266967b74111188c18c538bc57a4f80dbd7d73563bd0bfa0382c1a52e6da2f6c"
+    },
+    {
+      "seed": 60,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "edfc55dfe1f2a84935e1d19966f3d2536384c069789226919834a98c5cd7e99b"
+    },
+    {
+      "seed": 61,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "b0a741afe85f5ca322ca90ec7b70d41f28abc2df09eb742bb4b987db99d1d03b"
+    }
+  ]
+}

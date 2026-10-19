@@ -1,0 +1,5 @@
+dataset,files used,raw rows,duplication rate after raw load,"random-split leakage (3-dec, log1p, NN)","LOFO leakage (same, raw counts)",family-seen vs LOFO supervised ROC-AUC,best detector,fusion gain vs best single with CI
+CIC-IDS2017,"11 files (Wednesday, Friday, Tuesday, Monday, Thursday)","1,425,079","24.61% (1,072,941 unique)","88.9% (3dec), 4.3% (log1p), 98.3% (NN eps)","3.3% (65/1956), 0.0% (log1p), 0.0% (NN eps)",0.9999 +/- 0.0001 vs 0.7151 +/- 0.0633,Mean_Anomaly,"+24.19 +/- 5.81 [+19.77, +28.62]"
+UNSW-NB15,"2 files (train.parquet, test.parquet)","257,673","47.67% (134,842 unique)","0.7% (3dec), 0.7% (log1p), 0.7% (NN eps)","0.8% (25/3007), 0.7% (log1p), 0.7% (NN eps)",0.9761 +/- 0.0026 vs 0.9264 +/- 0.0057,Autoencoder,"+27.81 +/- 1.87 [+26.49, +29.37]"
+LYCOS-IDS2017,None (files not found on disk),n/a,n/a,n/a,n/a,n/a,n/a,n/a
+CSE-CIC-IDS2018,None (files not found on disk),n/a,n/a,n/a,n/a,n/a,n/a,n/a

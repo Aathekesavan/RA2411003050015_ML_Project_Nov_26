@@ -1,0 +1,37 @@
+{
+  "fold_name": "LOFO_DoS",
+  "held_out_family": "DoS",
+  "target_prevalence": 0.1,
+  "actual_prevalence": 0.099966,
+  "subsampled_side": "attack",
+  "is_low_power": false,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_DoS.joblib",
+  "split_row_counts": {
+    "train": 32312,
+    "val": 10771,
+    "test": 8883
+  },
+  "class_counts": {
+    "train": {
+      "Benign": 23983,
+      "BruteForce": 6862,
+      "PortScan": 1467
+    },
+    "val": {
+      "Benign": 7994,
+      "BruteForce": 2288,
+      "PortScan": 489
+    },
+    "test": {
+      "Benign": 7995,
+      "DoS": 888
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "ab66bbed678ba7a5583733f95df985674448a2516d41fa50f45f6530b08c3ee6",
+    "val": "dc362a5a7d9f4f69f4637532e9f485468147c4d2801f2c461bbe5f65bf452c45",
+    "test": "f8303ef719158994221f9a91916b7cbe6aaa096c64cdb304ad484725b8b324a5"
+  },
+  "multi_seed_runs": []
+}

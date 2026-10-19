@@ -1,0 +1,49 @@
+Family,Prevalence,Method,ROC_AUC,PR_AUC,Test_Samples,Positives
+DoS,1.0%,Supervised_XGBoost,0.6424,0.1326,101010,1010
+DoS,1.0%,Isolation_Forest,0.9233,0.0671,101010,1010
+DoS,1.0%,Autoencoder,0.9691,0.5238,101010,1010
+DoS,1.0%,Fusion_Val (a),0.6424,0.1326,101010,1010
+DoS,1.0%,Fusion_Inner_LOFO (b),0.965,0.2,101010,1010
+DoS,1.0%,Max_Fusion,0.9585,0.16,101010,1010
+DoS,1.0%,Logistic_Stack,0.9686,0.2523,101010,1010
+DoS,1.0%,Naive_Random_Split_XGBoost,0.9992,0.9983,101010,1010
+DoS,5.0%,Supervised_XGBoost,0.6437,0.358,105263,5263
+DoS,5.0%,Isolation_Forest,0.9236,0.2667,105263,5263
+DoS,5.0%,Autoencoder,0.969,0.7606,105263,5263
+DoS,5.0%,Fusion_Val (a),0.6437,0.358,105263,5263
+DoS,5.0%,Fusion_Inner_LOFO (b),0.9658,0.5349,105263,5263
+DoS,5.0%,Max_Fusion,0.9586,0.4769,105263,5263
+DoS,5.0%,Logistic_Stack,0.9691,0.6023,105263,5263
+DoS,5.0%,Naive_Random_Split_XGBoost,0.9992,0.9983,105263,5263
+PortScan,1.0%,Supervised_XGBoost,0.7861,0.1707,101010,1010
+PortScan,1.0%,Isolation_Forest,0.8713,0.0416,101010,1010
+PortScan,1.0%,Autoencoder,0.9462,0.1179,101010,1010
+PortScan,1.0%,Fusion_Val (a),0.7861,0.1707,101010,1010
+PortScan,1.0%,Fusion_Inner_LOFO (b),0.9396,0.1583,101010,1010
+PortScan,1.0%,Max_Fusion,0.9385,0.1393,101010,1010
+PortScan,1.0%,Logistic_Stack,0.9389,0.1589,101010,1010
+PortScan,1.0%,Naive_Random_Split_XGBoost,0.9989,0.9944,101010,1010
+PortScan,5.0%,Supervised_XGBoost,0.7754,0.3672,39120,1956
+PortScan,5.0%,Isolation_Forest,0.8691,0.1776,39120,1956
+PortScan,5.0%,Autoencoder,0.9468,0.3905,39120,1956
+PortScan,5.0%,Fusion_Val (a),0.7754,0.3672,39120,1956
+PortScan,5.0%,Fusion_Inner_LOFO (b),0.94,0.4146,39120,1956
+PortScan,5.0%,Max_Fusion,0.9387,0.3748,39120,1956
+PortScan,5.0%,Logistic_Stack,0.939,0.4081,39120,1956
+PortScan,5.0%,Naive_Random_Split_XGBoost,0.9989,0.9944,39120,1956
+BruteForce,1.0%,Supervised_XGBoost,0.5666,0.0257,101010,1010
+BruteForce,1.0%,Isolation_Forest,0.8843,0.0404,101010,1010
+BruteForce,1.0%,Autoencoder,0.8702,0.039,101010,1010
+BruteForce,1.0%,Fusion_Val (a),0.5666,0.0257,101010,1010
+BruteForce,1.0%,Fusion_Inner_LOFO (b),0.9012,0.052,101010,1010
+BruteForce,1.0%,Max_Fusion,0.9007,0.0505,101010,1010
+BruteForce,1.0%,Logistic_Stack,0.9053,0.0549,101010,1010
+BruteForce,1.0%,Naive_Random_Split_XGBoost,0.9998,0.9991,101010,1010
+BruteForce,5.0%,Supervised_XGBoost,0.5813,0.1265,105263,5263
+BruteForce,5.0%,Isolation_Forest,0.8801,0.1713,105263,5263
+BruteForce,5.0%,Autoencoder,0.8685,0.1686,105263,5263
+BruteForce,5.0%,Fusion_Val (a),0.5813,0.1265,105263,5263
+BruteForce,5.0%,Fusion_Inner_LOFO (b),0.9,0.2141,105263,5263
+BruteForce,5.0%,Max_Fusion,0.898,0.207,105263,5263
+BruteForce,5.0%,Logistic_Stack,0.905,0.2315,105263,5263
+BruteForce,5.0%,Naive_Random_Split_XGBoost,0.9998,0.9991,105263,5263
