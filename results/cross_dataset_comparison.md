@@ -1,8 +1,8 @@
 # Cross-Dataset Generalization & Leakage Audit Summary
 
-- **Run ID:** `run_20261019_eddc08e`
-- **Git Commit Hash:** `eddc08e-dirty`
-- **Date:** `2026-10-19 14:29:04 UTC`
+- **Run ID:** `run_20261019_d14f4f4`
+- **Git Commit Hash:** `d14f4f4`
+- **Date:** `2026-10-19 14:40:03 UTC`
 - **Seed Count:** `5`
 - **CIC-IDS2017 Raw Rows:** `2,830,743` (Sum of all 8 partition files)
 - **CIC-IDS2017 Duplication Rate:** `21.03%` (Sourced from Data Card)

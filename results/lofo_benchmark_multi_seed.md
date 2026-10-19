@@ -1,8 +1,8 @@
 # SentinelX-Shift Multi-Seed LOFO Benchmark
 
-- **Run ID:** `run_20261019_eddc08e`
-- **Git Commit Hash:** `eddc08e-dirty`
-- **Date:** `2026-10-19 14:23:14 UTC`
+- **Run ID:** `run_20261019_d14f4f4`
+- **Git Commit Hash:** `d14f4f4`
+- **Date:** `2026-10-19 14:34:11 UTC`
 - **Raw Scores Row Count:** `4,131,380`
 - **Seed Count:** `5`
 - **Note:** *Computed entirely from raw_scores.parquet*

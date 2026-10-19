@@ -1,8 +1,8 @@
 # SentinelX-Shift: Production Guard Scoring Specification
 
 **Status:** APPROVED FOR PRODUCTION GUARD  
-**Run ID:** `run_20261019_eddc08e`  
-**Git Commit Hash:** `eddc08e-dirty`  
+**Run ID:** `run_20261019_d14f4f4`  
+**Git Commit Hash:** `d14f4f4`  
 **Author:** Senior ML-Security Engineer  
 
 ---

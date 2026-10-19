@@ -1,6 +1,6 @@
 # Stability Fusion Weight Sensitivity Curve (b in [0, 1])
 
-- **Run ID:** `run_20261019_eddc08e` | **Git Hash:** `eddc08e-dirty`
+- **Run ID:** `run_20261019_eddc08e` | **Git Hash:** `eddc08e`
 
 | b_weight | Precision@50 | Precision@100 | Precision@500 | R-Precision |
 | --- | --- | --- | --- | --- |

@@ -1,6 +1,6 @@
 # Alert Prioritization Stability Benchmark (5-Seed LOFO)
 
-- **Run ID:** `run_20261019_eddc08e` | **Git Hash:** `eddc08e-dirty`
+- **Run ID:** `run_20261019_eddc08e` | **Git Hash:** `eddc08e`
 - **Seeds Evaluated:** 5 seeds (42, 101, 202, 303, 404)
 - **Verdict Decision Variant:** V2 (`s_risk * ((1 - b) + b * S_exp)`) determines verdict; V2_rank reported alongside as rank-tie sensitivity diagnostic.
 - **Single Verdict Rule:** `holm_adj_p < 0.05` and CI excludes zero -> `helped`/`hurt`; otherwise `no benefit detected`.
