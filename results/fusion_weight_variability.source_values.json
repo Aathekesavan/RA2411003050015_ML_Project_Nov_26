@@ -1,0 +1,153 @@
+{
+  "source_file": "fusion_weight_variability.md",
+  "generated_at": "2026-10-19T12:00:30.069818",
+  "total_numbers_recorded": 24,
+  "source_numbers": [
+    0.0,
+    0.01,
+    0.02,
+    0.09,
+    0.11,
+    0.18,
+    0.24,
+    0.25,
+    0.29,
+    0.3,
+    0.36,
+    0.43,
+    0.46,
+    0.54,
+    0.57,
+    0.64,
+    0.76,
+    0.91,
+    0.99,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    5.0
+  ],
+  "data": [
+    {
+      "Family": "DoS_DDoS",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "DoS_DDoS",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "DoS_DDoS",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "BruteForce",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "BruteForce",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "BruteForce",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "PortScan",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "0.91 +/- 0.18",
+      "Mean_w2": "0.09 +/- 0.18",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "4/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "PortScan",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "0.99 +/- 0.02",
+      "Mean_w2": "0.01 +/- 0.02",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "4/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "PortScan",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "0.91 +/- 0.18",
+      "Mean_w2": "0.09 +/- 0.18",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "4/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "Bot",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "0.64 +/- 0.29",
+      "Mean_w2": "0.36 +/- 0.29",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "2/5",
+      "Tuning_Status": "Stable"
+    },
+    {
+      "Family": "Bot",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "Bot",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "0.76 +/- 0.30",
+      "Mean_w2": "0.24 +/- 0.30",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "3/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "WebAttack",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "0.43 +/- 0.11",
+      "Mean_w2": "0.57 +/- 0.11",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "0/5",
+      "Tuning_Status": "Stable"
+    },
+    {
+      "Family": "WebAttack",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family": "WebAttack",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "0.54 +/- 0.25",
+      "Mean_w2": "0.46 +/- 0.25",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "1/5",
+      "Tuning_Status": "Stable"
+    }
+  ]
+}

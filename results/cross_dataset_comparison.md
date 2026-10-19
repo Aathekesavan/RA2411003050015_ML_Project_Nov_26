@@ -1,7 +1,8 @@
 # Cross-Dataset Generalization & Leakage Audit Summary
 
-- **Git Commit Hash:** `96b0f25`
-- **Date:** `2026-10-19 05:33:12 UTC`
+- **Run ID:** `run_20261019_99c9f0a`
+- **Git Commit Hash:** `99c9f0a-dirty`
+- **Date:** `2026-10-19 06:31:06 UTC`
 - **Raw Scores Row Count:** `4,131,380`
 - **Seed Count:** `5`
 - **Note:** *Computed entirely from raw_scores.parquet*

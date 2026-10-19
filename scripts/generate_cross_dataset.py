@@ -5,7 +5,9 @@ Every metric in the table and markdown must be dynamically computed
 from saved result CSVs and parquet files on disk.
 If a required input file is missing, raises FileNotFoundError.
 """
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 import numpy as np
 

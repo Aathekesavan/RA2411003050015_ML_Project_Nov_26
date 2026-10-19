@@ -5,7 +5,7 @@
   "actual_prevalence": 0.009999,
   "subsampled_side": "attack",
   "is_low_power": false,
-  "random_seed": 404,
+  "random_seed": 42,
   "scaler_path": "results\\models\\scaler_lofo_PortScan.joblib",
   "split_row_counts": {
     "train": 37721,
@@ -33,9 +33,9 @@
     }
   },
   "split_sha256_checksums": {
-    "train": "273c1e574f2447b9979e14bb0d69b1dd0562427a2e59793c9456f913b6337715",
-    "val": "8665e42ae7c3d14011a11f45e4c58341d1cef7d0f1a769bf8dae3cb237b825e9",
-    "test": "85279923176928b7f1f955acc2f763207a6fb916200ca5902e190e993a890db3"
+    "train": "7c360b4cd11c825e2970b9507403e48894744896a2b67acb36c72d17a28b72d1",
+    "val": "4382451386add05d4b5eda04238b70a4e2487d52e2911980759d21aa0b6abde6",
+    "test": "f953309c365ce6db190b5303b03983cf1aadfcffcafc37752e867d18aac83155"
   },
   "multi_seed_runs": []
 }

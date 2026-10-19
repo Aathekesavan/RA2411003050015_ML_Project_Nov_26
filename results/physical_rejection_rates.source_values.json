@@ -1,0 +1,70 @@
+{
+  "source_file": "physical_rejection_rates.md",
+  "generated_at": "2026-10-19T12:01:32.605213",
+  "total_numbers_recorded": 22,
+  "source_numbers": [
+    0.0,
+    1.0,
+    2.0,
+    2.43,
+    3.39,
+    4.65,
+    5.0,
+    6.0,
+    10.0,
+    44.0,
+    47.6,
+    51.2,
+    54.0,
+    57.0,
+    61.4,
+    220.0,
+    238.0,
+    256.0,
+    270.0,
+    285.0,
+    307.0,
+    500.0
+  ],
+  "data": [
+    {
+      "Jitter_Magnitude": "+/- 1%",
+      "Total_Perturbations_Evaluated": 500,
+      "Valid_Perturbations_Accepted": 500,
+      "Raw_Domain_Violations_Pre_Clamp": 270,
+      "Raw_Violation_Rate_Pct": "54.00%",
+      "Defensive_Clamping_Actions": 220,
+      "Clamping_Rate_Pct": "44.00%",
+      "Post_Clamping_Rejections": 0,
+      "Final_Rejection_Rate_Pct": "0.00%",
+      "Mean_Relative_Change_Pct": "2.43%",
+      "Top_Clamped_Invariant": "Rule 6 (2-Packet / Equal IAT Duration Sync) (220)"
+    },
+    {
+      "Jitter_Magnitude": "+/- 5%",
+      "Total_Perturbations_Evaluated": 500,
+      "Valid_Perturbations_Accepted": 500,
+      "Raw_Domain_Violations_Pre_Clamp": 285,
+      "Raw_Violation_Rate_Pct": "57.00%",
+      "Defensive_Clamping_Actions": 238,
+      "Clamping_Rate_Pct": "47.60%",
+      "Post_Clamping_Rejections": 0,
+      "Final_Rejection_Rate_Pct": "0.00%",
+      "Mean_Relative_Change_Pct": "3.39%",
+      "Top_Clamped_Invariant": "Rule 6 (2-Packet / Equal IAT Duration Sync) (220)"
+    },
+    {
+      "Jitter_Magnitude": "+/- 10%",
+      "Total_Perturbations_Evaluated": 500,
+      "Valid_Perturbations_Accepted": 500,
+      "Raw_Domain_Violations_Pre_Clamp": 307,
+      "Raw_Violation_Rate_Pct": "61.40%",
+      "Defensive_Clamping_Actions": 256,
+      "Clamping_Rate_Pct": "51.20%",
+      "Post_Clamping_Rejections": 0,
+      "Final_Rejection_Rate_Pct": "0.00%",
+      "Mean_Relative_Change_Pct": "4.65%",
+      "Top_Clamped_Invariant": "Rule 6 (2-Packet / Equal IAT Duration Sync) (220)"
+    }
+  ]
+}

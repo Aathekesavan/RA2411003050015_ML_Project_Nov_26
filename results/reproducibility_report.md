@@ -1,8 +1,8 @@
 # SentinelX-Shift Reproducibility Audit & Benchmark Verification
 
-- **Run ID:** `run_reproducible_lofo_96b0f25`
-- **Git Commit Hash:** `96b0f25`
-- **Verification Timestamp:** `2026-10-19 05:18:24 UTC`
+- **Run ID:** `run_20261019_99c9f0a`
+- **Git Commit Hash:** `99c9f0a`
+- **Verification Timestamp:** `2026-10-19 06:25:21 UTC`
 - **Note:** *Computed entirely from raw_scores.parquet*
 
 ---

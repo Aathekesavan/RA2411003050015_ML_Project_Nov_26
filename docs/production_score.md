@@ -1,8 +1,8 @@
 # SentinelX-Shift: Production Guard Scoring Specification
 
 **Status:** APPROVED FOR PRODUCTION GUARD  
-**Run ID:** `run_reproducible_lofo`  
-**Git Commit Hash:** `committed`  
+**Run ID:** `run_20261019_99c9f0a`  
+**Git Commit Hash:** `99c9f0a`  
 **Author:** Senior ML-Security Engineer  
 
 ---
