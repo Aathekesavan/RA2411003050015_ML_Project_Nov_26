@@ -207,8 +207,7 @@ def regenerate_all_reports(
     unique_seeds = sorted(df_raw["seed"].unique().tolist())
     seed_count = len(unique_seeds)
 
-    git_hash = get_git_hash()
-    run_id = f"run_reproducible_lofo_{git_hash}"
+    git_hash, run_id = get_git_info()
     timestamp_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     # 1. Strictly recompute composite scores from component columns
