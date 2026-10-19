@@ -8,20 +8,24 @@
   "random_seed": 404,
   "scaler_path": "results\\models\\scaler_lofo_BruteForce.joblib",
   "split_row_counts": {
-    "train": 32142,
-    "val": 10713,
+    "train": 32325,
+    "val": 10775,
     "test": 101010
   },
   "class_counts": {
     "train": {
-      "Benign": 23983,
-      "DoS": 6692,
-      "PortScan": 1467
+      "Benign": 23245,
+      "DoS_DDoS": 4929,
+      "WebAttack": 1607,
+      "PortScan": 1466,
+      "Bot": 1078
     },
     "val": {
-      "Benign": 7994,
-      "DoS": 2230,
-      "PortScan": 489
+      "Benign": 7748,
+      "DoS_DDoS": 1643,
+      "WebAttack": 536,
+      "PortScan": 489,
+      "Bot": 359
     },
     "test": {
       "Benign": 100000,
@@ -29,9 +33,9 @@
     }
   },
   "split_sha256_checksums": {
-    "train": "4606cd5f9e07cc671fbbdc23587c2b1981e6451bd4b41d5f81bbc14b11901532",
-    "val": "e37ba74dbdbeadbb08c248611d7c5b66b4781de7928fcf1df75c41f762ee4e6a",
-    "test": "91c9d4f8c9f0f144f7b572191c2e58d9a55f2daede2724f96b700c6dfdfa442c"
+    "train": "0dcdf60af25aba81919f67dbf8917b6be97140d14de42d64b073d9e4eb29c165",
+    "val": "fabee1161a5569c1155e06bdc27cf3e9a781e1cd1526c3e7cdce2681140d3235",
+    "test": "c214349489f8debed327088c85f8f2f0e51afb2a0fccbe481d769d5fae8c6e12"
   },
   "multi_seed_runs": []
 }

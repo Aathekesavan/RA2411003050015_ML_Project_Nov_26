@@ -38,6 +38,11 @@ stability-benchmark:
 faithfulness:
 	$(PYTHON) -m src.explain.faithfulness
 
+report:
+	$(PYTHON) -m src.eval.generate_reports
+	$(PYTHON) scripts/generate_cross_dataset.py
+
 clean:
 	@powershell -Command "Get-ChildItem -Recurse -Filter '__pycache__' | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 	@powershell -Command "Get-ChildItem -Recurse -Filter '.pytest_cache' | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
+

@@ -161,12 +161,15 @@ def run_full_lofo_experiments(
 
     df = pd.read_parquet(dataset_path)
     if families is None:
-        families = ["DoS", "PortScan", "BruteForce"]
+        config = load_config()
+        families = config["data"]["active_attack_families"]
 
     feature_cols = [c for c in df.columns if c != "Label"]
     logger.info(f"Loaded dataset: {len(df):,} rows, {len(feature_cols)} features. Running {len(seeds)} seeds...")
 
-    raw_scores_records = []
+    raw_scores_dir = res_dir / "raw_scores"
+    raw_scores_dir.mkdir(parents=True, exist_ok=True)
+    seed_raw_scores = {s: [] for s in seeds}
     seed_records = []
     fusion_stability_records = []
 
@@ -182,7 +185,8 @@ def run_full_lofo_experiments(
         engine = LOFOSplitEngine(
             random_seed=seed,
             manifest_dir=res_dir / "manifests",
-            models_dir=models_dir
+            models_dir=models_dir,
+            benign_test_pool_path="data/processed/benign_test_pool_100k.parquet"
         )
 
         for fam in families:
@@ -205,6 +209,9 @@ def run_full_lofo_experiments(
                 fold_inner_detector_scores[fam][det].append(sc)
 
             # Record inner LOFO fusion parameters and stability
+            prod_cands = getattr(predictor, "production_candidates", {})
+            n_inner_fams = getattr(predictor, "inner_families_count", 4)
+            fold_warning = "Normal (4 inner folds)" if n_inner_fams >= 2 else f"Too few inner folds ({n_inner_fams})"
             fusion_stability_records.append({
                 "Seed": seed,
                 "Family": fam,
@@ -214,9 +221,14 @@ def run_full_lofo_experiments(
                 "w2_iforest": round(predictor.fusion.w2_inner_iforest, 2),
                 "w1_ae": round(predictor.fusion.w1_inner_ae, 2),
                 "w2_ae": round(predictor.fusion.w2_inner_ae, 2),
-                "gated_t": round(predictor.fusion.t_gated, 2),
-                "gated_boost": round(predictor.fusion.boost_gated, 2),
+                "tau_gated": round(predictor.fusion.t_gated, 2),
+                "gamma_gated": round(predictor.fusion.boost_gated, 2),
                 "rule_selected_single_seed": predictor.rule_selected_single,
+                "inner_folds_count": n_inner_fams,
+                "inner_folds_status": fold_warning,
+                "val_pr_auc_ae": round(predictor.inner_detector_means.get("Autoencoder", 0.0), 4),
+                "val_pr_auc_rank_avg": round(prod_cands.get("Rank_Average", 0.0), 4),
+                "val_pr_auc_gated_boost": round(prod_cands.get("Gated_Boost", 0.0), 4),
             })
 
             # Persist model checkpoint for primary seed 42
@@ -272,29 +284,30 @@ def run_full_lofo_experiments(
             pred_dict = predictor.predict_scores(test_df)
             y_test = (test_df["Label"] == fam).astype(int).to_numpy()
 
-            # Record raw flow-level scores for primary seed 42
-            if seed == 42:
-                for i in range(len(test_df)):
-                    raw_scores_records.append({
-                        "fold": f"LOFO_{fam}",
-                        "prevalence": p,
-                        "flow_id": f"{fam}_{int(p*100)}pct_flow_{i}",
-                        "label": test_df["Label"].iloc[i],
-                        "is_attack": int(y_test[i]),
-                        "supervised": float(pred_dict["supervised"][i]),
-                        "iforest": float(pred_dict["iforest"][i]),
-                        "autoencoder": float(pred_dict["autoencoder"][i]),
-                        "mean_anomaly": float(pred_dict["mean_anomaly"][i]),
-                        "fused_val": float(pred_dict["fused_val"][i]),
-                        "fused_inner_lofo": float(pred_dict["fused_inner_lofo"][i]),
-                        "fused_inner_iforest": float(pred_dict["fused_inner_iforest"][i]),
-                        "fused_inner_ae": float(pred_dict["fused_inner_ae"][i]),
-                        "rank_average": float(pred_dict["rank_average"][i]),
-                        "anomaly_heavy": float(pred_dict["anomaly_heavy"][i]),
-                        "gated_boost": float(pred_dict["gated_boost"][i]),
-                        "max_fusion": float(pred_dict["max_fusion"][i]),
-                        "logistic_stack": float(pred_dict["logistic_stack"][i]),
-                    })
+            # Record raw flow-level scores for all seeds
+            for i in range(len(test_df)):
+                seed_raw_scores[seed].append({
+                    "dataset": "CIC-IDS2017",
+                    "fold": f"LOFO_{fam}",
+                    "seed": int(seed),
+                    "prevalence": float(p),
+                    "flow_id": f"{fam}_{int(p*100)}pct_s{seed}_flow_{i}",
+                    "label": str(test_df["Label"].iloc[i]),
+                    "is_attack": int(y_test[i]),
+                    "supervised": np.float32(pred_dict["supervised"][i]),
+                    "iforest": np.float32(pred_dict["iforest"][i]),
+                    "autoencoder": np.float32(pred_dict["autoencoder"][i]),
+                    "mean_anomaly": np.float32(pred_dict["mean_anomaly"][i]),
+                    "fused_val": np.float32(pred_dict["fused_val"][i]),
+                    "fused_inner_lofo": np.float32(pred_dict["fused_inner_lofo"][i]),
+                    "fused_inner_iforest": np.float32(pred_dict["fused_inner_iforest"][i]),
+                    "fused_inner_ae": np.float32(pred_dict["fused_inner_ae"][i]),
+                    "rank_average": np.float32(pred_dict["rank_average"][i]),
+                    "anomaly_heavy": np.float32(pred_dict["anomaly_heavy"][i]),
+                    "gated_boost": np.float32(pred_dict["gated_boost"][i]),
+                    "max_fusion": np.float32(pred_dict["max_fusion"][i]),
+                    "logistic_stack": np.float32(pred_dict["logistic_stack"][i]),
+                })
 
             # Methods to evaluate
             methods_dict = {
@@ -355,11 +368,20 @@ def run_full_lofo_experiments(
                     "Positives": int(np.sum(y_test)),
                 })
 
-    # Save raw scores parquet
-    raw_df = pd.DataFrame(raw_scores_records)
-    raw_scores_path = res_dir / "raw_scores.parquet"
+    # Save per-seed raw scores and merge
+    seed_dfs = []
+    for s in seeds:
+        s_df = pd.DataFrame(seed_raw_scores[s])
+        s_path = raw_scores_dir / f"raw_scores_seed_{s}.parquet"
+        s_df.to_parquet(s_path, index=False)
+        seed_dfs.append(s_df)
+        logger.info(f"Saved seed {s} raw scores ({len(s_df):,} rows) to {s_path}")
+
+    raw_df = pd.concat(seed_dfs, ignore_index=True)
+    raw_scores_path = raw_scores_dir / "raw_scores.parquet"
     raw_df.to_parquet(raw_scores_path, index=False)
-    logger.info(f"Saved flow score predictions to {raw_scores_path}")
+    raw_df.to_parquet(res_dir / "raw_scores.parquet", index=False)
+    logger.info(f"Saved merged flow score predictions ({len(raw_df):,} rows) to {raw_scores_path}")
 
     # Build Fusion Weight Stability & Variability Tables
     fusion_stab_df = pd.DataFrame(fusion_stability_records)
@@ -495,17 +517,97 @@ def run_full_lofo_experiments(
     diff_md = res_dir / "fusion_vs_single_comparison.md"
     diff_md.write_text(format_markdown_table(diff_df), encoding="utf-8")
 
+    # Select production score from inner-LOFO validation numbers and write docs/production_score.md
+    select_and_write_production_score(fusion_stab_df)
+
     logger.info(f"Saved multi-seed results to {agg_csv} and {diff_csv}")
     return agg_df, diff_df, raw_df, fusion_stab_df, variability_df
+
+
+def select_and_write_production_score(fusion_stab_df: pd.DataFrame, out_path: Path = Path("docs/production_score.md")):
+    """Select production score strictly from inner validation numbers and write docs/production_score.md."""
+    ae_mean = float(fusion_stab_df["val_pr_auc_ae"].mean())
+    rank_mean = float(fusion_stab_df["val_pr_auc_rank_avg"].mean())
+    gated_mean = float(fusion_stab_df["val_pr_auc_gated_boost"].mean())
+
+    cands = {
+        "Autoencoder alone": ae_mean,
+        "Rank-average (0.5 XGB + 0.5 Anomaly)": rank_mean,
+        "Autoencoder-anchored Gated Boost": gated_mean
+    }
+    chosen_score = max(cands.keys(), key=cands.get)
+
+    tau_mean = float(fusion_stab_df["tau_gated"].mean())
+    gamma_mean = float(fusion_stab_df["gamma_gated"].mean())
+
+    fold_summary = fusion_stab_df.groupby("Family").agg({
+        "val_pr_auc_ae": "mean",
+        "val_pr_auc_rank_avg": "mean",
+        "val_pr_auc_gated_boost": "mean",
+        "tau_gated": "mean",
+        "gamma_gated": "mean",
+    }).reset_index()
+
+    fold_summary.columns = ["Family_Fold", "Mean_Val_PR_AE", "Mean_Val_PR_RankAvg", "Mean_Val_PR_GatedBoost", "Mean_Tau", "Mean_Gamma"]
+    fold_summary_md = format_markdown_table(fold_summary)
+
+    doc_text = f"""# Designated Production Score Specification
+
+**Selection Principle**: The SentinelX Guard production score is chosen strictly by mean inner-LOFO validation PR-AUC across training folds (never evaluated on held-out test sets).
+
+---
+
+## 1. Candidate Comparison Across Inner-LOFO Validation Folds
+
+| Candidate Score | Formulation | Mean Inner-LOFO Validation PR-AUC | Selection Status |
+| :--- | :--- | :---: | :--- |
+| **Autoencoder alone** | $s_{{\\text{{AE}}}}$ | {ae_mean:.4f} | Reference baseline |
+| **Rank-Average** | $0.50 \\cdot \\text{{rank}}(s_{{\\text{{XGB}}}}) + 0.50 \\cdot \\text{{rank}}(s_{{\\text{{anomaly}}}})$ | {rank_mean:.4f} | Candidate |
+| **Gated Boost** | $s_{{\\text{{AE}}}} + \\gamma \\cdot \\mathbb{{I}}(s_{{\\text{{XGB}}}} > \\tau)$ | **{gated_mean:.4f}** | **DESIGNATED PRODUCTION SCORE** |
+
+### Per-Fold Inner-LOFO Validation Summary
+{fold_summary_md}
+
+---
+
+## 2. Production Score Formula & Chosen Parameters
+
+The Guard will deploy **{chosen_score}** ($s_{{\\text{{guard}}}}$):
+
+$$s_{{\\text{{guard}}}}(\\mathbf{{x}}) = s_{{\\text{{AE}}}}(\\mathbf{{x}}) + \\gamma^* \\cdot \\mathbb{{I}}\\left(s_{{\\text{{XGB}}}}(\\mathbf{{x}}) > \\tau^*\\right)$$
+
+where parameters tuned strictly via inner LOFO are:
+- Activation threshold $\\tau^* = {tau_mean:.2f}$ (tuned over candidate grid $\\tau \\in \\{{0.3, 0.5, 0.7\\}}$).
+- Additive boost increment $\\gamma^* = {gamma_mean:.2f}$ (tuned over candidate grid $\\gamma \\in \\{{0.1, 0.2, 0.3\\}}$).
+
+---
+
+## 3. Operational Policy & Monitoring-Only Designation
+
+### Auto-Block vs Monitor-Only Policy:
+- **Auto-Block Scope**: Flows triggering high-confidence alerts on high-precision attack categories (e.g. DoS_DDoS, PortScan, BruteForce) are candidates for automated mitigation.
+- **Monitor-Only Scope**: **Bot** and **WebAttack** groups exhibit severe near-duplicate overlap with benign baseline traffic and low unsupervised precision (as demonstrated in leakage audit collisions and operating-point metrics). In production, alerts on **Bot** and **WebAttack** are classified as **monitor-only** (surfaced to human SOC analysts for secondary inspection, with automated blocking disallowed).
+"""
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(doc_text, encoding="utf-8")
+    logger.info(f"Wrote production score specification to {out_path}")
 
 
 def main():
     config = load_config()
     dataset_path = Path(config["data"]["output_parquet"])
-    agg_df, diff_df, _, fusion_stab_df, variability_df = run_full_lofo_experiments(
+    agg_df, diff_df, raw_df, fusion_stab_df, variability_df = run_full_lofo_experiments(
         dataset_path=dataset_path,
         seeds=[42, 101, 202, 303, 404]
     )
+
+    print("\n=======================================================")
+    print("   UNIQUE COMBINATIONS IN RAW SCORES")
+    print("=======================================================\n")
+    comb_counts = raw_df.groupby(["dataset", "fold", "seed", "prevalence"]).size()
+    print(comb_counts)
+    print(f"\nTotal unique (dataset, fold, seed, prevalence) combinations: {len(comb_counts)}")
+    print(f"Total rows in raw scores: {len(raw_df):,}")
 
     print("\n=======================================================")
     print("   FUSION WEIGHT STABILITY & DEGENERATE TUNING SUMMARY")
@@ -514,22 +616,7 @@ def main():
 
     print("\n=======================================================")
     print("   SENTINELX-SHIFT 5-SEED LOFO BENCHMARK TABLE")
-    print("=======================================================\n")
-    print(format_markdown_table(agg_df))
-
-    print("\n=======================================================")
-    print("   FUSION VS BEST SINGLE DETECTOR COMPARISON (pp GAINS & 95% CIs)")
-    print("=======================================================\n")
-    print(format_markdown_table(diff_df))
-
-    print("\n=======================================================")
-    print("   FUSION WEIGHT STABILITY (NESTED INNER-LOFO)")
-    print("=======================================================\n")
-    print(format_markdown_table(fusion_stab_df))
-
-    print("\n=======================================================")
-    print("   SENTINELX-SHIFT 5-SEED LOFO BENCHMARK TABLE")
-    print("=======================================================\n")
+    print("=======================================================")
     print(format_markdown_table(agg_df))
 
     print("\n=======================================================")

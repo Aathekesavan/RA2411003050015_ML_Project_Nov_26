@@ -1,0 +1,41 @@
+{
+  "fold_name": "LOFO_WebAttack",
+  "held_out_family": "WebAttack",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 0.05,
+  "subsampled_side": "benign",
+  "is_low_power": false,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_WebAttack.joblib",
+  "split_row_counts": {
+    "train": 37580,
+    "val": 12527,
+    "test": 42860
+  },
+  "class_counts": {
+    "train": {
+      "Benign": 23245,
+      "BruteForce": 6862,
+      "DoS_DDoS": 4929,
+      "PortScan": 1466,
+      "Bot": 1078
+    },
+    "val": {
+      "Benign": 7748,
+      "BruteForce": 2288,
+      "DoS_DDoS": 1643,
+      "PortScan": 489,
+      "Bot": 359
+    },
+    "test": {
+      "Benign": 40717,
+      "WebAttack": 2143
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "b1aba4e29900822297cd5541f8d417941176668b8531ab08de491aa45fcfe476",
+    "val": "5dccd31e6e56f43afefb5726052c63d2f81998992d7862127f47d30c21a4afe5",
+    "test": "8e0990a375b5b1af21bbfeeb579380a88fcd0f3467ff99c4dfd1cf14c8fbbac6"
+  },
+  "multi_seed_runs": []
+}

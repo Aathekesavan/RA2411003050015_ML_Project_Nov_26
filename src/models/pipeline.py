@@ -180,14 +180,15 @@ def tune_nested_inner_lofo(
     scores_if = {float(w): [] for w in candidates}
     scores_ae = {float(w): [] for w in candidates}
 
-    # Gated boost grid: t in [0.5, 0.6, 0.7, 0.8, 0.9], boost in [0.1, 0.2, 0.3]
-    gated_candidates = [(t, b) for t in [0.5, 0.6, 0.7, 0.8, 0.9] for b in [0.1, 0.2, 0.3]]
+    # Gated boost grid: tau in [0.3, 0.5, 0.7], gamma in [0.1, 0.2, 0.3]
+    gated_candidates = [(t, b) for t in [0.3, 0.5, 0.7] for b in [0.1, 0.2, 0.3]]
     scores_gated = {cand: [] for cand in gated_candidates}
 
     # Standalone single detector tracking for rule-based selection
     single_if_scores = []
     single_ae_scores = []
     single_mean_scores = []
+    single_rank_avg_scores = []
 
     benign_train_full = train_df[train_df["Label"] == "Benign"]
 
@@ -232,6 +233,12 @@ def tune_nested_inner_lofo(
         single_ae_scores.append(compute_pr_auc(y_in_val, s_a))
         single_mean_scores.append(compute_pr_auc(y_in_val, s_mean))
 
+        # Evaluate rank average baseline (50/50 percentile ranks)
+        r_xgb = pd.Series(s_sup).rank(pct=True).to_numpy()
+        r_mean = pd.Series(s_mean).rank(pct=True).to_numpy()
+        s_rank_avg = 0.5 * r_xgb + 0.5 * r_mean
+        single_rank_avg_scores.append(compute_pr_auc(y_in_val, s_rank_avg))
+
         # Evaluate candidate weights on held-out inner family
         for w1 in candidates:
             w2 = 1.0 - w1
@@ -266,17 +273,27 @@ def tune_nested_inner_lofo(
     }
     rule_selected_single = max(detector_means.keys(), key=lambda k: detector_means[k])
 
+    production_candidates = {
+        "Autoencoder": float(np.mean(single_ae_scores)),
+        "Rank_Average": float(np.mean(single_rank_avg_scores)),
+        "Gated_Boost": float(avg_gated[(best_t, best_boost)]),
+    }
+
     logger.info(
         f"Nested Inner LOFO: Mean({w1_mean:.2f}/{w2_mean:.2f}), "
         f"IForest({w1_if:.2f}/{w2_if:.2f}), AE({w1_ae:.2f}/{w2_ae:.2f}), "
-        f"Gated(t={best_t:.1f}, boost={best_boost:.1f}) | "
+        f"Gated(tau={best_t:.1f}, gamma={best_boost:.1f}) | "
         f"Rule-Selected Best Single: {rule_selected_single} "
-        f"(IF={detector_means['Isolation_Forest']:.4f}, AE={detector_means['Autoencoder']:.4f}, Mean={detector_means['Mean_Anomaly']:.4f})"
+        f"(IF={detector_means['Isolation_Forest']:.4f}, AE={detector_means['Autoencoder']:.4f}, Mean={detector_means['Mean_Anomaly']:.4f}) | "
+        f"Production Candidates Validation PR-AUC: {production_candidates}"
     )
-    return InnerLOFOResult(
+    res = InnerLOFOResult(
         w1_mean, w2_mean, w1_if, w2_if, w1_ae, w2_ae,
         best_t, best_boost, rule_selected_single, detector_means
     )
+    res.production_candidates = production_candidates
+    res.inner_families_count = len(inner_families)
+    return res
 
 
 def train_lofo_pipeline(
@@ -349,7 +366,7 @@ def train_lofo_pipeline(
     fusion.set_inner_lofo_weights(inner_res.ae[0], inner_res.ae[1], signal="ae")
     fusion.set_gated_boost_params(inner_res.gated[0], inner_res.gated[1])
 
-    return SentinelXPredictor(
+    predictor = SentinelXPredictor(
         feature_cols=feature_cols,
         pipeline=pipeline,
         supervised_model=xgb,
@@ -359,4 +376,7 @@ def train_lofo_pipeline(
         rule_selected_single=inner_res.rule_selected_single,
         inner_detector_means=inner_res.detector_means
     )
+    predictor.production_candidates = getattr(inner_res, "production_candidates", {})
+    predictor.inner_families_count = getattr(inner_res, "inner_families_count", 4)
+    return predictor
 

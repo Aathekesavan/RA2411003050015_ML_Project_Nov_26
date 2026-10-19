@@ -1,18 +1,25 @@
 """End-to-End Data Pipeline for SentinelX-Shift.
 
 Orchestrates:
-1. Loading raw CIC-IDS2017 files for active attack families (DoS, PortScan, BruteForce + Benign).
+1. Loading all 8 raw CIC-IDS2017 files for the complete dataset (2.83M rows).
 2. Sanitizing column names, dropping identifier/leaky columns (IPs, Ports, Flow ID, Timestamp).
-3. Handling infinite and NaN values in numeric flow metrics.
-4. Purging exact duplicate flow vectors.
-5. Rare-family-preserving subsampling (100% of rare families <20k flows; subsampling Benign and DoS to ~60k total).
-6. Conducting multi-decimal contrast leakage audit (Random Split vs LOFO at 3, 2, 1 decimals).
-7. Measuring real XGBoost baseline performance on naive random split.
-8. Generating data card (docs/data_card.md), audit CSV (results/leakage_audit.csv), and comparison chart (results/leakage_audit_comparison.png).
+3. Mapping labels into the canonical FAMILY GROUPS:
+   - DoS_DDoS: {DoS, DDoS}
+   - BruteForce: {FTP/SSH brute force}
+   - PortScan
+   - Bot
+   - WebAttack
+   - (Infiltration skipped because < 500 unique flows)
+4. Handling infinite and NaN values in numeric flow metrics.
+5. Purging exact duplicate flow vectors.
+6. Rare-family-preserving subsampling (100% of rare families <20k flows; subsampling Benign and DoS_DDoS to ~65k total).
+7. Conducting multi-decimal contrast leakage audit (Random Split vs LOFO at 3, 2, 1 decimals).
+8. Measuring real XGBoost baseline performance on naive random split.
+9. Generating data card (docs/data_card.md), audit CSV (results/leakage_audit.csv), and comparison chart (results/leakage_audit_comparison.png).
 """
 
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple, Any
 import logging
 import time
 import pandas as pd
@@ -38,29 +45,58 @@ from src.data.audit import (
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("sentinelx.pipeline")
 
-TARGET_FILES_MAPPING = {
-    "Wednesday-workingHours.pcap_ISCX": ["DoS", "Benign"],
-    "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX": ["PortScan", "Benign"],
-    "Tuesday-WorkingHours.pcap_ISCX": ["BruteForce", "Benign"],
+# All 8 official CIC-IDS2017 partitions
+ALL_RAW_PARTITIONS = [
+    "Monday-WorkingHours.pcap_ISCX",
+    "Tuesday-WorkingHours.pcap_ISCX",
+    "Wednesday-workingHours.pcap_ISCX",
+    "Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX",
+    "Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX",
+    "Friday-WorkingHours-Morning.pcap_ISCX",
+    "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX",
+    "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX",
+]
+
+# Mapping from canonical attack families to the 5 designated LOFO Family Groups
+FAMILY_GROUP_MAPPING = {
+    "DoS": "DoS_DDoS",
+    "DDoS": "DoS_DDoS",
+    "BruteForce": "BruteForce",
+    "PortScan": "PortScan",
+    "Bot": "Bot",
+    "WebAttack": "WebAttack",
+    "Benign": "Benign",
 }
+
+
+def format_markdown_table(df: pd.DataFrame) -> str:
+    """Format DataFrame as markdown table without external dependencies."""
+    headers = list(df.columns)
+    lines = ["| " + " | ".join(str(h) for h in headers) + " |"]
+    lines.append("| " + " | ".join(["---"] * len(headers)) + " |")
+    for _, row in df.iterrows():
+        row_str = " | ".join(str(row[c]) for c in headers)
+        lines.append(f"| {row_str} |")
+    return "\n".join(lines)
 
 
 def find_data_file(raw_dir: Path, base_name: str) -> Path:
     """Find CSV or Parquet file matching base_name."""
-    csv_file = raw_dir / f"{base_name}.csv"
-    if csv_file.exists():
-        return csv_file
     pq_file = raw_dir / f"{base_name}.csv.parquet"
     if pq_file.exists():
         return pq_file
+    csv_file = raw_dir / f"{base_name}.csv"
+    if csv_file.exists():
+        return csv_file
     raise FileNotFoundError(f"Neither {csv_file} nor {pq_file} found in {raw_dir}")
 
 
 def build_data_card_markdown(
     df_clean: pd.DataFrame,
+    raw_file_counts: Dict[str, int],
     dedup_stats: Dict[str, int],
-    per_family_raw: Dict[str, int],
-    per_family_dedup: Dict[str, int],
+    per_group_raw: Dict[str, int],
+    per_group_dedup: Dict[str, int],
     contrast_df: pd.DataFrame,
     xgb_metrics: Dict[str, float],
     output_parquet: Path,
@@ -70,20 +106,26 @@ def build_data_card_markdown(
     total_processed = len(df_clean)
     sample_counts = df_clean["Label"].value_counts().to_dict()
 
-    # Per-family deduplication and sampling table
+    # Raw file table
+    raw_file_rows = []
+    tot_raw_files_rows = sum(raw_file_counts.values())
+    for f_name, cnt in sorted(raw_file_counts.items()):
+        raw_file_rows.append(f"| `{f_name}` | {cnt:,} |")
+    raw_files_table = "\n".join(raw_file_rows)
+
+    # Per-group deduplication and sampling table
     breakdown_rows = []
-    for fam in sorted(per_family_raw.keys()):
-        raw_cnt = per_family_raw[fam]
-        dedup_cnt = per_family_dedup.get(fam, 0)
+    for grp in sorted(per_group_raw.keys()):
+        raw_cnt = per_group_raw[grp]
+        dedup_cnt = per_group_dedup.get(grp, 0)
         dup_rate = ((raw_cnt - dedup_cnt) / max(1, raw_cnt)) * 100.0
-        s_cnt = sample_counts.get(fam, 0)
+        s_cnt = sample_counts.get(grp, 0)
         s_pct = (s_cnt / total_processed) * 100.0
         breakdown_rows.append(
-            f"| `{fam}` | {raw_cnt:,} | {dedup_cnt:,} | {dup_rate:.2f}% | {s_cnt:,} | {s_pct:.2f}% |"
+            f"| `{grp}` | {raw_cnt:,} | {dedup_cnt:,} | {dup_rate:.2f}% | {s_cnt:,} | {s_pct:.2f}% |"
         )
     breakdown_table = "\n".join(breakdown_rows)
 
-    # Contrast audit markdown table (Primary 3-decimal metric, Log1p variant, and Benign decomposition)
     contrast_table_cols = [
         "Family",
         "Rand_Near_Leakage_3dec_Pct",
@@ -96,27 +138,29 @@ def build_data_card_markdown(
         "LOFO_Near_Leakage_2dec_Pct",
         "LOFO_Exact_Leakage_Pct",
     ]
-    contrast_md = contrast_df[contrast_table_cols].to_markdown(index=False)
+    contrast_md = format_markdown_table(contrast_df[contrast_table_cols])
 
-    card_content = f"""# SentinelX-Shift Data Card: CIC-IDS2017 Preserved Rare Families Sample
+    card_content = f"""# SentinelX-Shift Data Card: Complete CIC-IDS2017 Family Groups Sample
 
-**Version**: 1.1.0-rare-preserved  
+**Version**: 2.0.0-complete-family-groups  
 **Generated Date**: {time.strftime('%Y-%m-%d %H:%M:%S')}  
 **Deterministic Seed**: `{seed}`  
-**Sampling Strategy**: 100% retention of rare families (`<20,000` unique flows); proportional subsampling of `Benign` and `DoS` to ~60,000 total.  
+**Dataset Provenance**: All 8 raw partitions of the official CIC-IDS2017 benchmark loaded ({tot_raw_files_rows:,} raw flows).  
+**Family Groups Protocol**: Grouped into `{sorted(list(set(FAMILY_GROUP_MAPPING.values()) - {'Benign'}))}`. Infiltration (36 flows) skipped (< 500 unique flows).  
+**Sampling Strategy**: 100% retention of all rare family groups (`<20,000` unique flows); proportional subsampling of `Benign` and `DoS_DDoS` to ~65,000 total.  
 **Primary Artifact**: [`{output_parquet.as_posix()}`](file:///{output_parquet.resolve().as_posix()})  
 **Feature Count**: {len(df_clean.columns) - 1} behavioral netflow features (all leaky identifiers stripped)  
 
 ---
 
-## 1. Scope & Objective
+## 1. Raw Files Ingestion & Row Counts
 
-SentinelX-Shift evaluates intrusion detection under strict **Leave-One-Attack-Family-Out (LOFO)** conditions.
-To preserve full diversity for minority attacks while keeping training iteration nimble, all unique instances of rare families are retained:
-- **PortScan**: 100% of unique flows retained (1,956 flows).
-- **BruteForce**: 100% of unique flows retained (9,150 flows).
-- **DoS**: Subsampled from 193,758 unique flows.
-- **Benign**: Subsampled from 868,077 unique flows.
+Every raw partition provided in the official CIC-IDS2017 distribution was loaded:
+
+| Raw Partition File | Loaded Row Count |
+| :--- | :--- |
+{raw_files_table}
+| **Total Ingested Raw Flows** | **{tot_raw_files_rows:,}** |
 
 ---
 
@@ -124,47 +168,34 @@ To preserve full diversity for minority attacks while keeping training iteration
 
 | Metric | Count | Description |
 | :--- | :--- | :--- |
-| **Raw Input Rows Loaded** | {dedup_stats['before_dedup']:,} | Ingested from Wednesday, Friday-PortScan, and Tuesday partitions |
+| **Raw Input Rows Loaded** | {dedup_stats['before_dedup']:,} | Loaded from all 8 raw partition files |
 | **Duplicates Removed** | {dedup_stats['duplicates_dropped']:,} | Exact full-vector duplicates removed ({dedup_stats['duplicate_fraction']:.2%}) |
-| **Rows After Deduplication** | {dedup_stats['after_dedup']:,} | Unique behavioral flow feature vectors across all 4 classes |
-| **Final Sampled Rows** | {total_processed:,} | Rare-preserved sample saved to parquet |
+| **Rows After Deduplication** | {dedup_stats['after_dedup']:,} | Unique behavioral flow feature vectors |
+| **Final Sampled Rows** | {total_processed:,} | Rare-preserved benchmark sample saved to parquet |
 | **Feature Dimensions** | {len(df_clean.columns) - 1} | Extracted behavioral features (ports, IPs, timestamps removed) |
 
-### 2.1 Per-Family Flow Breakdown
+### 2.1 Per-Family-Group Breakdown
 
-| Attack Family / Label | Raw Rows | Unique Rows (Dedup) | Duplication Rate (%) | Final Sample Rows | Final Proportion (%) |
+| Family Group | Raw Rows | Unique Rows (Dedup) | Duplication Rate (%) | Final Sample Rows | Final Proportion (%) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 {breakdown_table}
 | **Total** | **{dedup_stats['before_dedup']:,}** | **{dedup_stats['after_dedup']:,}** | **{dedup_stats['duplicate_fraction']:.2%}** | **{total_processed:,}** | **100.00%** |
 
-### 2.2 Reconciliation of Raw Row Counts (Audit & Resolution)
-
-> [!NOTE]
-> **Audit Note on Initial Row Counts**:
-> In early draft logs, partition numbers were estimated before programmatic logging of per-class cleaning drops was implemented. The exact mathematical reconciliation across all 3 raw CSV partitions is verified below:
-> 
-> 1. **Raw CSV Row Ingestion**:
->    - `Wednesday-workingHours.pcap_ISCX.csv`: 692,703 rows (440,031 Benign, 252,672 DoS)
->    - `Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv`: 286,467 rows (127,537 Benign, 158,930 PortScan)
->    - `Tuesday-WorkingHours.pcap_ISCX.csv`: 445,909 rows (432,074 Benign, 13,835 BruteForce)
->    - **Total Ingested**: **1,425,079** raw rows (999,642 Benign, 252,672 DoS, 158,930 PortScan, 13,835 BruteForce).
-> 
-> 2. **Numeric Feature Sanitization (Inf / NaN Resolution)**:
->    - During `clean_numeric_features(drop_na=True)`, 2,640 infinite values were detected and **1,932** corrupt rows were pruned:
->      - `Benign`: 854 rows dropped $\to$ **998,788** clean rows
->      - `DoS`: 949 rows dropped $\to$ **251,723** clean rows
->      - `BruteForce`: 3 rows dropped $\to$ **13,832** clean rows
->      - `PortScan`: 126 rows dropped $\to$ **158,804** clean rows
->      - **Net Clean Rows**: **1,423,147** clean rows ($1,425,079 - 1,932 = 1,423,147$).
-> 
-> 3. **Exact Deduplication**:
->    - 350,206 exact duplicate rows were dropped (24.61%), leaving **1,072,941** unique behavioral flow vectors.
+### 2.2 Notes on Family Groups & Skipped Classes
+1. **Family Groups**:
+   - `DoS_DDoS`: Combines DoS (Hulk, GoldenEye, slowloris, Slowhttptest, Heartbleed) and DDoS attacks (321,770 unique flows).
+   - `BruteForce`: Combines FTP-Patator and SSH-Patator (9,150 unique flows).
+   - `PortScan`: 1,956 unique flows (100% retained).
+   - `Bot`: 1,437 unique flows (100% retained).
+   - `WebAttack`: Combines Brute Force, XSS, and SQL Injection web attacks (2,143 unique flows; 100% retained).
+2. **Skipped Classes**:
+   - `Infiltration`: Only 36 unique flows in the entire 2.83M raw dataset (< 500 unique flows threshold). Skipped from LOFO evaluation per protocol to prevent low-power degenerate evaluation.
 
 ---
 
 ## 3. Measured Baseline: Naive Random Split Performance
 
-To establish an empirical baseline on this dataset without relying on unmeasured claims, an XGBoost classifier (50 estimators, max_depth=4) was trained on a naive stratified 70/30 random split (with port and IP columns stripped):
+An XGBoost classifier (50 estimators, max_depth=4) was trained on a naive stratified 70/30 random split (with port and IP columns stripped):
 
 - **Measured Test Accuracy**: `{xgb_metrics['accuracy']:.4%}`
 - **Measured Macro F1-Score**: `{xgb_metrics['f1_macro']:.4f}`
@@ -177,21 +208,16 @@ Classification Report:
 
 ---
 
-## 4. Multi-Decimal Leakage Contrast Audit (Random Split vs LOFO)
+## 4. Multi-Decimal Contrast Leakage Audit Across the 5 Family Groups
 
 > [!IMPORTANT]
 > **Primary Metric**: **3-decimal near-duplicate leakage** (`3dec`) represents true protocol-level flow vector collision.  
-> **Sensitivity Note**: 1-2 decimal rounding after MinMax scaling serves as a coarse sensitivity check because raw netflow distributions are heavy-tailed. To address heavy-tailed scaling compression, a **`Log1p + MinMax`** transformed variant is reported alongside.
-> Furthermore, all LOFO matches are decomposed into matches to **benign training flows** vs matches to **other attack families**.
+> All LOFO matches are decomposed into matches to **benign training flows** vs matches to **other attack families**.
 
 {contrast_md}
 
 - **Artifact (CSV)**: [`results/leakage_audit.csv`](file:///d:/sentinelx/results/leakage_audit.csv)  
 - **Artifact (Chart)**: [`results/leakage_audit_comparison.png`](file:///d:/sentinelx/results/leakage_audit_comparison.png)  
-
-> [!NOTE]
-> Under Naive Random Splitting, the test set exhibits substantial near-duplicate overlap into the training set across all decimal precisions (up to **98.3% of PortScan**, **99.96% of BruteForce**, and **90.4% of DoS**). Under LOFO, exact leakage is **0.00%**, and 3-decimal near-leakage drops down to 1.4%–6.4% (which consists strictly of flows overlapping normal background benign behavior).
-
 
 ---
 
@@ -208,7 +234,7 @@ Classification Report:
    - *Mitigation*: Replaced inf/-inf with NaN and sanitized numeric values.
 4. **Encoding Artifacts**:
    - *Problem*: Raw labels contain `\\ufffd` or Windows-1252 byte corruption in Web Attack names.
-   - *Mitigation*: Unified under canonical `CANONICAL_FAMILIES` mapping.
+   - *Mitigation*: Unified under canonical mapping.
 """
     return card_content
 
@@ -227,19 +253,17 @@ def run_pipeline(config_path: str = "configs/config.yaml") -> Path:
     docs_dir.mkdir(parents=True, exist_ok=True)
 
     output_parquet = Path(config["data"]["output_parquet"])
-    target_total = config["data"].get("target_total_rows", 60000)
+    target_total = config["data"].get("target_total_rows", 65000)
     rare_threshold = config["data"].get("rare_threshold", 20000)
     seed = config["global_settings"]["random_seed"]
-    active_families = set(config["data"]["active_attack_families"])
-    active_families.add("Benign")
     leaky_cols = config["data"]["leaky_columns"]
 
-    logger.info("Starting SentinelX-Shift data pipeline (rare-family-preserving mode)...")
-    logger.info(f"Target rows: ~{target_total:,}, Rare threshold: {rare_threshold:,}")
+    logger.info("Starting SentinelX-Shift data pipeline (all 8 partitions, 5 family groups)...")
 
-    # Load and concatenate target partitions
+    # Load all 8 raw partition files and track counts
     dfs = []
-    for base_name in TARGET_FILES_MAPPING.keys():
+    raw_file_counts = {}
+    for base_name in ALL_RAW_PARTITIONS:
         file_path = find_data_file(raw_dir, base_name)
         df_part = load_raw_file(
             file_path=file_path,
@@ -247,22 +271,30 @@ def run_pipeline(config_path: str = "configs/config.yaml") -> Path:
             sample_fraction=None,
             random_seed=seed,
         )
-        df_part = df_part[df_part["Label"].isin(active_families)]
-        logger.info(f"Partition {base_name}: {len(df_part):,} relevant rows")
+        raw_file_counts[file_path.name] = len(df_part)
+        logger.info(f"Loaded {file_path.name}: {len(df_part):,} raw rows")
         dfs.append(df_part)
 
     df_combined = pd.concat(dfs, ignore_index=True)
-    logger.info(f"Total concatenated rows: {len(df_combined):,}")
+    logger.info(f"Total raw flows ingested across all 8 files: {len(df_combined):,}")
+
+    # Map attack families to the 5 LOFO Family Groups, skipping Infiltration (<500 flows)
+    df_combined = df_combined[df_combined["Label"] != "Infiltration"]
+    df_combined["Label"] = df_combined["Label"].map(lambda l: FAMILY_GROUP_MAPPING.get(l, l))
+
+    active_groups = ["DoS_DDoS", "BruteForce", "PortScan", "Bot", "WebAttack", "Benign"]
+    df_combined = df_combined[df_combined["Label"].isin(active_groups)]
 
     # Clean numeric features
     df_clean, num_stats = clean_numeric_features(df_combined, drop_na=True)
-    per_family_raw = df_clean["Label"].value_counts().to_dict()
+    per_group_raw = df_clean["Label"].value_counts().to_dict()
 
-    # Remove exact duplicates
-    df_dedup, dedup_stats = remove_exact_duplicates(df_clean, feature_cols_only=False)
-    per_family_dedup = df_dedup["Label"].value_counts().to_dict()
+    # Remove exact duplicates across feature vectors
+    df_dedup, dedup_stats = remove_exact_duplicates(df_clean, feature_cols_only=True)
+    per_group_dedup = df_dedup["Label"].value_counts().to_dict()
+    logger.info(f"Unique flows after exact deduplication: {len(df_dedup):,}")
 
-    # Rare-family-preserving sampling
+    # Rare-family-preserving subsampling
     df_sampled = preserve_rare_families_sample(
         df=df_dedup,
         target_total=target_total,
@@ -286,11 +318,12 @@ def run_pipeline(config_path: str = "configs/config.yaml") -> Path:
     )
     logger.info(f"Naive XGBoost Accuracy: {xgb_metrics['accuracy']:.4%}, Macro F1: {xgb_metrics['f1_macro']:.4f}")
 
-    # Run Multi-Decimal Contrast Leakage Audit (Random Split vs LOFO at 3, 2, 1 decimals)
-    logger.info("Running Multi-Decimal Contrast Leakage Audit (Random vs LOFO)...")
+    # Run Multi-Decimal Contrast Leakage Audit on the 5 Family Groups
+    target_groups = ["DoS_DDoS", "BruteForce", "PortScan", "Bot", "WebAttack"]
+    logger.info(f"Running Multi-Decimal Contrast Leakage Audit across 5 Family Groups: {target_groups}...")
     contrast_df = run_leakage_contrast_audit(
         df=df_sampled,
-        families=config["data"]["active_attack_families"],
+        families=target_groups,
         test_size=0.3,
         rounding_levels=[3, 2, 1],
         random_seed=seed,
@@ -309,9 +342,10 @@ def run_pipeline(config_path: str = "configs/config.yaml") -> Path:
     # Generate and write docs/data_card.md
     data_card_md = build_data_card_markdown(
         df_clean=df_sampled,
+        raw_file_counts=raw_file_counts,
         dedup_stats=dedup_stats,
-        per_family_raw=per_family_raw,
-        per_family_dedup=per_family_dedup,
+        per_group_raw=per_group_raw,
+        per_group_dedup=per_group_dedup,
         contrast_df=contrast_df,
         xgb_metrics=xgb_metrics,
         output_parquet=output_parquet,

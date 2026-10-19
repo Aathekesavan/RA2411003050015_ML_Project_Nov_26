@@ -132,7 +132,7 @@ def test_variant_iii_not_identical_to_variant_i_when_b_positive():
 
 
 def test_ranking_variants_correct_order():
-    """Ranking variants evaluate in the EXACT correct order (V1 to V5) with valid metrics."""
+    """Ranking variants evaluate in the EXACT correct order (V1 to V5 + V2_rank) with valid metrics."""
     np.random.seed(42)
     n = 150
     test_df = pd.DataFrame({
@@ -142,7 +142,7 @@ def test_ranking_variants_correct_order():
         "is_attack": np.random.choice([0, 1], size=n, p=[0.7, 0.3]),
     })
 
-    results_df = evaluate_ranking_variants(
+    results_df, diag = evaluate_ranking_variants(
         test_df,
         a_exp=1.0, b_exp=0.5,
         a_score=1.0, b_score=0.5,
@@ -154,8 +154,10 @@ def test_ranking_variants_correct_order():
         "V1_s_risk",
         "V2_s_risk_x_exp_stab",
         "V3_s_risk_x_score_stab",
-        "V4_exp_stab_alone",
+        "V4a_exp_stab_alone",
+        "V4b_s_risk_x_exp_mult",
         "V5_random_reorder",
+        "V2_rank_sensitivity",
     ]
 
     actual_variants = list(results_df["Variant"])
@@ -163,7 +165,7 @@ def test_ranking_variants_correct_order():
         f"Ranking variants evaluated in wrong order. Expected {expected_variants}, got {actual_variants}"
     )
 
-    valid_verdicts = {"baseline", "helped", "hurt", "no effect"}
+    valid_verdicts = {"baseline", "helped", "hurt", "no benefit detected"}
     for _, row in results_df.iterrows():
         assert row["Verdict"] in valid_verdicts
         assert "Precision@50" in row
@@ -192,10 +194,10 @@ def test_a_and_b_tuned_on_inner_folds_only():
     a_exp, b_exp = params["exp"]
     a_score, b_score = params["score"]
 
-    assert a_exp in [0.5, 1.0]
-    assert b_exp in [0.0, 0.2, 0.5, 1.0, 2.0]
-    assert a_score in [0.5, 1.0]
-    assert b_score in [0.0, 0.2, 0.5, 1.0, 2.0]
+    assert 0.0 <= a_exp <= 1.0
+    assert b_exp in [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 2.0]
+    assert 0.0 <= a_score <= 1.0
+    assert b_score in [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0, 2.0]
 
     # Verification that tuned parameters can be deployed to test set without test tuning
     n_test = 100
@@ -206,8 +208,9 @@ def test_a_and_b_tuned_on_inner_folds_only():
         "is_attack": np.random.choice([0, 1], size=n_test, p=[0.7, 0.3]),
     })
 
-    res = evaluate_ranking_variants(test_df, a_exp=a_exp, b_exp=b_exp, a_score=a_score, b_score=b_score, n_bootstrap=100)
-    assert len(res) == 5
+    res, diag = evaluate_ranking_variants(test_df, a_exp=a_exp, b_exp=b_exp, a_score=a_score, b_score=b_score, n_bootstrap=100)
+    assert len(res) == 7
+    assert isinstance(diag, dict)
 
 
 def test_jaccard_and_spearman_bounds():

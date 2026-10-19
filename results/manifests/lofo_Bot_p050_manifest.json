@@ -1,0 +1,41 @@
+{
+  "fold_name": "LOFO_Bot",
+  "held_out_family": "Bot",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 0.05,
+  "subsampled_side": "benign",
+  "is_low_power": false,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_Bot.joblib",
+  "split_row_counts": {
+    "train": 38109,
+    "val": 12704,
+    "test": 28740
+  },
+  "class_counts": {
+    "train": {
+      "Benign": 23245,
+      "BruteForce": 6862,
+      "DoS_DDoS": 4929,
+      "WebAttack": 1607,
+      "PortScan": 1466
+    },
+    "val": {
+      "Benign": 7748,
+      "BruteForce": 2288,
+      "DoS_DDoS": 1643,
+      "WebAttack": 536,
+      "PortScan": 489
+    },
+    "test": {
+      "Benign": 27303,
+      "Bot": 1437
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "5c21eb44d5b2a580daabab4f8993413e081e56ae7a9767a6e4fadc4fe79561c6",
+    "val": "527e2dcd58b8c4ae6744e840fae105887bacdaed1fe1ed0fe0cb7e0dff3adb6d",
+    "test": "6d40e8f70908998c16e52e8cffa4a2bbb798544d8745af8dc62c386812d75502"
+  },
+  "multi_seed_runs": []
+}

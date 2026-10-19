@@ -6,11 +6,13 @@ Implements realistic netflow jitter by:
 2. Recomputing derived features (rates, ratios, means) from perturbed base quantities.
 3. Enforcing physical domain invariants:
    - Non-negativity (duration, packets, bytes, IATs >= 0)
-   - Packets/sec <= line rate (physical network line limit)
+   - Positive duration (dur > 0)
+   - Packets/sec <= line rate (physical network line limit: 150 Mpps)
    - Flag counts <= total packet count
-   - Statistical hierarchy (Min <= Mean <= Max)
+   - Statistical hierarchy (Min <= Mean <= Max for packet lengths and IATs)
    - Temporal consistency (Max IAT <= Flow Duration)
-4. Enforcing bounded distributions so rejection rate <= 30% across 1%, 5%, and 10% jitter.
+4. Recording clamping actions, raw invalid rates BEFORE clamping, final rejection rates,
+   and mean relative change per jitter magnitude x in {1%, 5%, 10%}.
 """
 
 from typing import Dict, List, Optional, Tuple, Set, Any
@@ -53,13 +55,39 @@ class PhysicalPerturbationEngine:
     def __init__(self, random_seed: int = 42):
         self.rng = np.random.RandomState(random_seed)
         self.rejection_records: Dict[float, Dict[str, Any]] = {}
+        self.rule_rejections: Dict[float, Dict[str, int]] = {}
+        self.raw_invalid_records: Dict[float, Dict[str, int]] = {}
+        self.clamping_events: Dict[float, Dict[str, int]] = {}
+        self.relative_changes: Dict[float, List[float]] = {}
 
-    def _validate_invariants(self, flow_dict: Dict[str, float]) -> Tuple[bool, Optional[str]]:
-        """Validate all physical networking invariants for a flow dictionary.
+    def _categorize_rejection_reason(self, reason: Optional[str]) -> str:
+        """Map rejection reason string to canonical invariant rule."""
+        if not reason:
+            return "Valid"
+        if "Negative" in reason:
+            return "Rule 1 (Non-negativity: values >= 0)"
+        if "Non-positive duration" in reason:
+            return "Rule 2 (Positive Duration: dur > 0)"
+        if "line rate limit" in reason:
+            return "Rule 3 (Physical Line Rate: PPS <= 150 Mpps)"
+        if "Flag count" in reason:
+            return "Rule 4 (TCP Flag Consistency: flags <= packets)"
+        if "Statistical hierarchy" in reason:
+            return "Rule 5 (Packet Length Hierarchy: min <= mean <= max)"
+        if "IAT hierarchy" in reason or "Temporal violation" in reason:
+            return "Rule 6 (IAT Hierarchy & Temporal Consistency)"
+        return "Rule 7 (Other Domain Invariants)"
+
+    def validate_invariants(self, flow_dict: Dict[str, float]) -> Tuple[bool, Optional[str]]:
+        """Public validator checking all physical networking invariants for a flow dictionary.
 
         Returns:
             (is_valid, rejection_reason)
         """
+        return self._validate_invariants(flow_dict)
+
+    def _validate_invariants(self, flow_dict: Dict[str, float]) -> Tuple[bool, Optional[str]]:
+        """Validate all physical networking invariants for a flow dictionary."""
         # 1. Non-negativity check
         for feat, val in flow_dict.items():
             if feat in ("Label", "y_binary", "Family_Group"):
@@ -186,26 +214,96 @@ class PhysicalPerturbationEngine:
         self,
         flow_row: pd.Series,
         jitter_pct: float = 0.05,
-        max_attempts: int = 50
+        jitter_magnitude: Optional[int] = None,
+        max_attempts: int = 50,
+        audit_mode: bool = False
     ) -> Tuple[Optional[pd.Series], int, Optional[str]]:
-        """Apply bounded jitter ONLY to base netflow features and recompute derived features."""
+        """Apply bounded jitter to base netflow features, track pre-clamping invalidity and clamping events."""
+        if jitter_magnitude is not None:
+            jitter_pct = jitter_magnitude / 100.0
+
+        if jitter_pct not in self.raw_invalid_records:
+            self.raw_invalid_records[jitter_pct] = {}
+        if jitter_pct not in self.clamping_events:
+            self.clamping_events[jitter_pct] = {}
+        if jitter_pct not in self.relative_changes:
+            self.relative_changes[jitter_pct] = []
+        if jitter_pct not in self.rule_rejections:
+            self.rule_rejections[jitter_pct] = {}
+
         attempts = 0
         last_reason = None
         feature_cols = [c for c in flow_row.index if c not in ["Label", "y_binary", "Family_Group"]]
 
         while attempts < max_attempts:
             attempts += 1
+
+            # ---------------------------------------------------------
+            # 1. Unconstrained Raw Perturbation (only when audit_mode=True to measure raw invalid rate)
+            # ---------------------------------------------------------
+            if audit_mode:
+                raw_dict = {col: float(flow_row[col]) for col in feature_cols}
+                raw_j_dur = self.rng.uniform(-jitter_pct, jitter_pct)
+                if "Flow Duration" in raw_dict and raw_dict["Flow Duration"] > 0.0:
+                    raw_dict["Flow Duration"] = max(1.0, raw_dict["Flow Duration"] * (1.0 + raw_j_dur))
+
+                for cnt_col in self.BASE_COUNT_FEATURES:
+                    if cnt_col in raw_dict and raw_dict[cnt_col] > 0.0:
+                        raw_dict[cnt_col] = float(max(0, int(np.round(raw_dict[cnt_col] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct))))))
+
+                for flag_col in self.TCP_FLAG_FEATURES:
+                    if flag_col in raw_dict and raw_dict[flag_col] > 0.0:
+                        raw_dict[flag_col] = float(max(0, int(np.round(raw_dict[flag_col] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct))))))
+
+                for prefix in ["Fwd Packet Length", "Bwd Packet Length", "Packet Length", "Flow IAT", "Fwd IAT", "Bwd IAT"]:
+                    min_k = f"{prefix} Min" if prefix != "Packet Length" else "Min Packet Length"
+                    mean_k = f"{prefix} Mean" if prefix != "Packet Length" else "Packet Length Mean"
+                    max_k = f"{prefix} Max" if prefix != "Packet Length" else "Max Packet Length"
+                    if min_k in raw_dict and mean_k in raw_dict and max_k in raw_dict:
+                        # Independent unconstrained jitter
+                        raw_dict[min_k] = max(0.0, raw_dict[min_k] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct)))
+                        raw_dict[mean_k] = max(0.0, raw_dict[mean_k] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct)))
+                        raw_dict[max_k] = max(0.0, raw_dict[max_k] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct)))
+
+                raw_dict = self._recalculate_derived_features(raw_dict)
+                raw_valid, raw_reason = self._validate_invariants(raw_dict)
+                if not raw_valid:
+                    raw_cat = self._categorize_rejection_reason(raw_reason)
+                    self.raw_invalid_records[jitter_pct][raw_cat] = self.raw_invalid_records[jitter_pct].get(raw_cat, 0) + 1
+
+            # ---------------------------------------------------------
+            # 2. Invariant-Preserving Bounded Perturbation with Clamping Tracking
+            # ---------------------------------------------------------
             flow_dict = {col: float(flow_row[col]) for col in feature_cols}
 
-            # 1. Perturb Flow Duration boundedly (guarantee non-negative)
+            # 2a. 2-packet flow / equal IAT synchronization
             dur_key = "Flow Duration" if "Flow Duration" in flow_dict else ("dur" if "dur" in flow_dict else None)
-            if dur_key and dur_key in flow_dict:
+            is_2pkt_or_equal_iat = False
+            if dur_key == "Flow Duration" and "Flow IAT Max" in flow_dict:
+                dur_val = flow_dict["Flow Duration"]
+                iat_max_val = flow_dict["Flow IAT Max"]
+                if dur_val > 0.0 and abs(iat_max_val - dur_val) / max(1.0, dur_val) <= 0.01:
+                    is_2pkt_or_equal_iat = True
+                    scale_dur_iat = 1.0 + self.rng.uniform(-jitter_pct, jitter_pct)
+                    flow_dict["Flow Duration"] = max(1.0, dur_val * scale_dur_iat)
+                    flow_dict["Flow IAT Max"] = flow_dict["Flow Duration"]
+                    if "Flow IAT Mean" in flow_dict:
+                        flow_dict["Flow IAT Mean"] = flow_dict["Flow Duration"]
+                    if "Flow IAT Total" in flow_dict:
+                        flow_dict["Flow IAT Total"] = flow_dict["Flow Duration"]
+                    if "Flow IAT Min" in flow_dict:
+                        flow_dict["Flow IAT Min"] = min(flow_dict["Flow IAT Max"], max(0.0, flow_dict["Flow IAT Min"] * scale_dur_iat))
+                    self.clamping_events[jitter_pct]["Rule 6 (2-Packet / Equal IAT Duration Sync)"] = (
+                        self.clamping_events[jitter_pct].get("Rule 6 (2-Packet / Equal IAT Duration Sync)", 0) + 1
+                    )
+
+            if not is_2pkt_or_equal_iat and dur_key and dur_key in flow_dict:
                 dur_val = flow_dict[dur_key]
                 if dur_val > 0.0:
                     j_dur = self.rng.uniform(-jitter_pct, jitter_pct)
                     flow_dict[dur_key] = max(1.0, dur_val * (1.0 + j_dur))
 
-            # 2. Perturb Base Packet and Byte Counts (guarantee non-negative integer counts)
+            # 2b. Perturb Base Packet and Byte Counts
             for cnt_col in self.BASE_COUNT_FEATURES:
                 if cnt_col in flow_dict and flow_dict[cnt_col] > 0.0:
                     j_cnt = self.rng.uniform(-jitter_pct, jitter_pct)
@@ -213,12 +311,11 @@ class PhysicalPerturbationEngine:
                     flow_dict[cnt_col] = float(max(1 if "Fwd Packets" in cnt_col or cnt_col == "spkts" else 0,
                                                    int(np.round(new_cnt))))
 
-            # Determine total packets for bounding
             tot_fwd = flow_dict.get("Total Fwd Packets", flow_dict.get("spkts", 1.0))
             tot_bwd = flow_dict.get("Total Backward Packets", flow_dict.get("dpkts", 0.0))
             tot_pkts = tot_fwd + tot_bwd
 
-            # Line rate check to adjust duration if necessary (bounded distribution)
+            # Line rate clamp
             dur_sec = max(1e-6, flow_dict[dur_key] * (1e-6 if dur_key == "Flow Duration" else 1.0)) if dur_key else 1.0
             if (tot_pkts / dur_sec) > self.MAX_LINE_RATE_PPS:
                 min_dur_sec = tot_pkts / (self.MAX_LINE_RATE_PPS * 0.9)
@@ -226,15 +323,23 @@ class PhysicalPerturbationEngine:
                     flow_dict[dur_key] = min_dur_sec * 1e6
                 elif dur_key == "dur":
                     flow_dict[dur_key] = min_dur_sec
+                self.clamping_events[jitter_pct]["Rule 3 (Physical Line Rate Clamping)"] = (
+                    self.clamping_events[jitter_pct].get("Rule 3 (Physical Line Rate Clamping)", 0) + 1
+                )
 
-            # 3. Perturb TCP Flag Counts bounded by total packets
+            # 2c. Perturb TCP Flag Counts bounded by total packets
             for flag_col in self.TCP_FLAG_FEATURES:
                 if flag_col in flow_dict and flow_dict[flag_col] > 0.0:
                     j_flg = self.rng.uniform(-jitter_pct, jitter_pct)
                     new_flg = int(np.round(flow_dict[flag_col] * (1.0 + j_flg)))
-                    flow_dict[flag_col] = float(min(int(tot_pkts), max(0, new_flg)))
+                    clamped_flg = float(min(int(tot_pkts), max(0, new_flg)))
+                    if clamped_flg != new_flg:
+                        self.clamping_events[jitter_pct]["Rule 4 (TCP Flag Clamped to Packets)"] = (
+                            self.clamping_events[jitter_pct].get("Rule 4 (TCP Flag Clamped to Packets)", 0) + 1
+                        )
+                    flow_dict[flag_col] = clamped_flg
 
-            # 4. Perturb Statistical Packet Length Hierarchies (Min <= Mean <= Max)
+            # 2d. Statistical Packet Length Hierarchies (Min <= Mean <= Max)
             for prefix in ["Fwd Packet Length", "Bwd Packet Length", "Packet Length"]:
                 min_k = f"{prefix} Min" if prefix != "Packet Length" else "Min Packet Length"
                 mean_k = f"{prefix} Mean" if prefix != "Packet Length" else "Packet Length Mean"
@@ -242,13 +347,11 @@ class PhysicalPerturbationEngine:
                 std_k = f"{prefix} Std" if prefix != "Packet Length" else "Packet Length Std"
 
                 if min_k in flow_dict and mean_k in flow_dict and max_k in flow_dict:
-                    # Scale all three by a common factor to preserve order
                     common_scale = 1.0 + self.rng.uniform(-jitter_pct, jitter_pct)
                     new_min = max(0.0, flow_dict[min_k] * common_scale)
                     new_mean = max(0.0, flow_dict[mean_k] * common_scale)
                     new_max = max(0.0, flow_dict[max_k] * common_scale)
 
-                    # Fine-grained jitter clamped to preserve hierarchy
                     sub_j_min = 1.0 + self.rng.uniform(-jitter_pct * 0.1, jitter_pct * 0.1)
                     sub_j_max = 1.0 + self.rng.uniform(-jitter_pct * 0.1, jitter_pct * 0.1)
                     sub_j_mean = 1.0 + self.rng.uniform(-jitter_pct * 0.1, jitter_pct * 0.1)
@@ -256,6 +359,11 @@ class PhysicalPerturbationEngine:
                     cand_min = max(0.0, new_min * sub_j_min)
                     cand_max = max(cand_min, new_max * sub_j_max)
                     cand_mean = min(cand_max, max(cand_min, new_mean * sub_j_mean))
+
+                    if not (cand_min <= cand_mean <= cand_max):
+                        self.clamping_events[jitter_pct]["Rule 5 (Packet Length Hierarchy Clamped)"] = (
+                            self.clamping_events[jitter_pct].get("Rule 5 (Packet Length Hierarchy Clamped)", 0) + 1
+                        )
 
                     flow_dict[min_k] = cand_min
                     flow_dict[mean_k] = cand_mean
@@ -267,7 +375,7 @@ class PhysicalPerturbationEngine:
             if "Packet Length Variance" in flow_dict and "Packet Length Std" in flow_dict:
                 flow_dict["Packet Length Variance"] = flow_dict["Packet Length Std"] ** 2
 
-            # 5. Perturb Inter-Arrival Times (IAT)
+            # 2e. Inter-Arrival Times (IAT)
             current_dur = flow_dict.get("Flow Duration", 1e6)
             for prefix in ["Flow IAT", "Fwd IAT", "Bwd IAT"]:
                 min_k = f"{prefix} Min"
@@ -276,15 +384,22 @@ class PhysicalPerturbationEngine:
                 std_k = f"{prefix} Std"
                 tot_k = f"{prefix} Total"
 
+                if prefix == "Flow IAT" and is_2pkt_or_equal_iat:
+                    if std_k in flow_dict and flow_dict[std_k] >= 0.0:
+                        flow_dict[std_k] = max(0.0, flow_dict[std_k] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct)))
+                    continue
+
                 if min_k in flow_dict and mean_k in flow_dict and max_k in flow_dict:
                     common_scale = 1.0 + self.rng.uniform(-jitter_pct, jitter_pct)
                     new_min = max(0.0, flow_dict[min_k] * common_scale)
                     new_mean = max(0.0, flow_dict[mean_k] * common_scale)
                     new_max = max(0.0, flow_dict[max_k] * common_scale)
 
-                    # Bounded by current duration
-                    if prefix == "Flow IAT":
-                        new_max = min(current_dur, new_max)
+                    if prefix == "Flow IAT" and new_max > current_dur:
+                        new_max = current_dur
+                        self.clamping_events[jitter_pct]["Rule 6 (IAT Max Clamped to Flow Duration)"] = (
+                            self.clamping_events[jitter_pct].get("Rule 6 (IAT Max Clamped to Flow Duration)", 0) + 1
+                        )
 
                     cand_min = max(0.0, new_min)
                     cand_max = max(cand_min, new_max)
@@ -299,7 +414,7 @@ class PhysicalPerturbationEngine:
                 if tot_k in flow_dict and flow_dict[tot_k] >= 0.0:
                     flow_dict[tot_k] = max(0.0, flow_dict[tot_k] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct)))
 
-            # 6. Perturb Active / Idle Features
+            # 2f. Active / Idle
             for prefix in ["Active", "Idle"]:
                 min_k = f"{prefix} Min"
                 mean_k = f"{prefix} Mean"
@@ -316,19 +431,32 @@ class PhysicalPerturbationEngine:
                 if std_k in flow_dict and flow_dict[std_k] >= 0.0:
                     flow_dict[std_k] = max(0.0, flow_dict[std_k] * (1.0 + self.rng.uniform(-jitter_pct, jitter_pct)))
 
-            # 7. Recalculate all derived features from perturbed base values
+            # Recalculate derived features
             flow_dict = self._recalculate_derived_features(flow_dict)
 
-            # 8. Validate physical invariants
+            # Validate physical invariants
             is_valid, reason = self._validate_invariants(flow_dict)
             if is_valid:
                 res_series = pd.Series(flow_dict)
                 for meta_col in ["Label", "y_binary", "Family_Group"]:
                     if meta_col in flow_row.index:
                         res_series[meta_col] = flow_row[meta_col]
+
+                # Compute non-trivial relative change
+                diffs = [
+                    abs(flow_dict[c] - float(flow_row[c])) / max(1.0, abs(float(flow_row[c])))
+                    for c in feature_cols if c in flow_dict
+                ]
+                rel_change = float(np.mean(diffs)) if diffs else 0.0
+                self.relative_changes[jitter_pct].append(rel_change)
+
                 return res_series, attempts, None
             else:
                 last_reason = reason
+                if jitter_pct not in self.rule_rejections:
+                    self.rule_rejections[jitter_pct] = {}
+                cat = self._categorize_rejection_reason(reason)
+                self.rule_rejections[jitter_pct][cat] = self.rule_rejections[jitter_pct].get(cat, 0) + 1
 
         return None, attempts, last_reason
 
@@ -337,22 +465,26 @@ class PhysicalPerturbationEngine:
         flow_row: pd.Series,
         n_samples: int = 20,
         jitter_pct: float = 0.05,
-        max_attempts_per_sample: int = 50
+        jitter_magnitude: Optional[int] = None,
+        max_attempts_per_sample: int = 50,
+        audit_mode: bool = False
     ) -> pd.DataFrame:
         """Generate exactly n_samples physically valid perturbations of a flow."""
+        if jitter_magnitude is not None:
+            jitter_pct = jitter_magnitude / 100.0
         perturbed_rows = []
         total_attempts = 0
 
         for _ in range(n_samples):
             p_series, attempts, reason = self.perturb_single_flow(
-                flow_row, jitter_pct=jitter_pct, max_attempts=max_attempts_per_sample
+                flow_row, jitter_pct=jitter_pct, max_attempts=max_attempts_per_sample, audit_mode=audit_mode
             )
             total_attempts += attempts
             if p_series is not None:
                 perturbed_rows.append(p_series)
             else:
                 # Deterministic fallback with tiny 0.05% jitter ensuring 100% validity
-                p_fallback, fb_att, _ = self.perturb_single_flow(flow_row, jitter_pct=0.0005, max_attempts=10)
+                p_fallback, fb_att, _ = self.perturb_single_flow(flow_row, jitter_pct=0.0005, max_attempts=10, audit_mode=audit_mode)
                 total_attempts += fb_att
                 perturbed_rows.append(p_fallback if p_fallback is not None else flow_row.copy())
 
@@ -364,15 +496,38 @@ class PhysicalPerturbationEngine:
 
         return pd.DataFrame(perturbed_rows).reset_index(drop=True)
 
-    def get_rejection_summary(self) -> Dict[str, Dict[str, float]]:
-        """Return rejection rate percentage across tested jitter magnitudes."""
+    def get_rejection_summary(self) -> Dict[str, Dict[str, Any]]:
+        """Return comprehensive audit summary including pre-clamping invalidity and clamping frequencies."""
         summary = {}
         for jitter, data in self.rejection_records.items():
             tot = data["generated"] + data["rejected_attempts"]
             rej_pct = (data["rejected_attempts"] / max(1, tot)) * 100.0
-            summary[f"jitter_{int(round(jitter*100))}%"] = {
+            rules = self.rule_rejections.get(jitter, {})
+
+            raw_inv = self.raw_invalid_records.get(jitter, {})
+            raw_inv_count = sum(raw_inv.values())
+            raw_inv_pct = (raw_inv_count / max(1, tot)) * 100.0
+
+            clamped = self.clamping_events.get(jitter, {})
+            clamped_count = sum(clamped.values())
+            clamped_pct = (clamped_count / max(1, tot)) * 100.0
+
+            rel_changes = self.relative_changes.get(jitter, [0.0])
+            mean_rel_change_pct = float(np.mean(rel_changes)) * 100.0 if rel_changes else 0.0
+
+            summary[f"jitter_{int(round(jitter * 100))}%"] = {
+                "jitter_pct": jitter,
                 "total_attempts": tot,
                 "valid_generated": data["generated"],
+                "raw_invalid_attempts": raw_inv_count,
+                "raw_invalid_pct": round(raw_inv_pct, 2),
+                "raw_rule_breakdown": raw_inv,
+                "clamping_events_count": clamped_count,
+                "clamping_events_pct": round(clamped_pct, 2),
+                "clamping_events_breakdown": clamped,
+                "rejected_attempts": data["rejected_attempts"],
                 "rejection_pct": round(rej_pct, 2),
+                "rule_breakdown": rules,
+                "mean_relative_change_pct": round(mean_rel_change_pct, 2),
             }
         return summary

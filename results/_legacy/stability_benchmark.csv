@@ -1,0 +1,8 @@
+Variant,Formula / Description,Precision@50,Precision@100,Precision@500,R-Precision,Delta_P@100_pp,95% CI (Delta P@100 pp),Delta_R_Prec_pp,95% CI (Delta R-Prec pp),Unadjusted_p,Holm_Adj_p,Verdict
+V1_s_risk,s_risk (Baseline),88.00%,65.00%,n/a,84.62%,0.00,"[+0.00, +0.00]",0.00,"[+0.00, +0.00]",1.0000,1.0000,baseline
+V2_s_risk_x_exp_stab,s_risk * (0.5 + 0.2 * S_exp_stab),88.00%,65.00%,n/a,84.62%,+0.00,"[+0.00, +0.00]",+0.00,"[-2.90, +5.08]",1.0000,1.0000,no effect
+V2a_interp_0.3,0.70*s_risk + 0.30*S_exp (Secondary: Fixed b=0.30),88.00%,65.00%,n/a,84.62%,+0.00,"[+0.00, +0.00]",+0.00,"[-6.67, +6.79]",1.0000,1.0000,no effect
+V2b_interp_0.5,0.50*s_risk + 0.50*S_exp (Secondary: Fixed b=0.50),86.00%,65.00%,n/a,80.00%,+0.00,"[+0.00, +0.00]",-4.62,"[-11.27, +5.46]",0.5640,1.0000,no effect
+V3_s_risk_x_score_stab,s_risk * (0.5 + 0.0 * S_score_stab),88.00%,65.00%,n/a,84.62%,+0.00,"[+0.00, +0.00]",+0.00,"[+0.00, +0.00]",1.0000,1.0000,no effect
+V4_exp_stab_alone,S_exp_stab alone,72.00%,63.00%,n/a,66.15%,-2.00,"[-6.00, +0.00]",-18.46,"[-28.33, -5.96]",0.0040,0.0200,hurt
+V5_random_reorder,Random Reorder,60.00%,58.00%,n/a,58.46%,-7.00,"[-8.00, -4.00]",-26.15,"[-36.37, -10.67]",0.0010,0.0060,hurt

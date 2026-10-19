@@ -15,9 +15,11 @@ data:
   target_total_rows: 60000
   rare_family_threshold: 20000
   active_attack_families:
-    - "DoS"
-    - "PortScan"
+    - "DoS_DDoS"
     - "BruteForce"
+    - "PortScan"
+    - "Bot"
+    - "WebAttack"
   include_benign: true
 
   # Identifiers and leaky columns to drop unconditionally

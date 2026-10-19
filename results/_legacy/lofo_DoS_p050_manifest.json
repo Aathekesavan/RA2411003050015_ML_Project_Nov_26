@@ -1,0 +1,157 @@
+{
+  "fold_name": "LOFO_DoS",
+  "held_out_family": "DoS",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 1.0,
+  "subsampled_side": "attack",
+  "is_low_power": true,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_DoS.joblib",
+  "split_row_counts": {
+    "train": 855,
+    "val": 285,
+    "test": 1
+  },
+  "class_counts": {
+    "train": {
+      "Generic": 459,
+      "Exploit_Payload": 283,
+      "Recon_Analysis": 113
+    },
+    "val": {
+      "Generic": 153,
+      "Exploit_Payload": 94,
+      "Recon_Analysis": 38
+    },
+    "test": {
+      "DoS": 1
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "f03b62b221feca74dcce2633a8e23b1a7f636ec3fe7fa1006943bda0c707dbbf",
+    "val": "b12964abe79da221a3dc5d3184d59993638fdef9d9f0d67a3784959d77cf0675",
+    "test": "964cef498a9161aa20a33d9c9c24a2b2792fb5a0b674cab22cd89643bfaf0770"
+  },
+  "multi_seed_runs": [
+    {
+      "seed": 42,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "964cef498a9161aa20a33d9c9c24a2b2792fb5a0b674cab22cd89643bfaf0770"
+    },
+    {
+      "seed": 43,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "0d7854fc1a6362cd3dae8843d3876f184983f89dab6fae802e553022aaacb14f"
+    },
+    {
+      "seed": 44,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "a950edfb43f484882ee9fdea2720f1609bbd272b087cfe9b91e85e66ffcfdc27"
+    },
+    {
+      "seed": 45,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "5e98bd3a3b1fe95c7ecbd5fb22fbfd97e7b8aba7d942007ccadaf432967d225e"
+    },
+    {
+      "seed": 46,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "66e59ded979e0cba5ab1d5953470bb939d0c5721e1fcd021b1fae033baf69124"
+    },
+    {
+      "seed": 47,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "ad8bccd49b4a29117bf8a5d61f77717d085059eef041db3b6406b2fbb877e3c7"
+    },
+    {
+      "seed": 48,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "da383ab407144e3ebe8a2ab9f4055fb78430ed1c36b89b8387ac4d98f3ec18d8"
+    },
+    {
+      "seed": 49,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "255569e67264211b2cd1c080b3868c60cf9453783a10b440874dfebaa82c3da0"
+    },
+    {
+      "seed": 50,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "00f1060b6347f72c1281928981bc84f40aa03afe2ce1d7fe202f412e45d8a592"
+    },
+    {
+      "seed": 51,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "75f00f855ea5cd4a2057e5878ea87f3daecdd8827e3caa93ffd18eb1e6756464"
+    },
+    {
+      "seed": 52,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "03ad8e33b099741963b4e4b2f02823f8a0f87c5a4b99a977a36c7c22c820a0ba"
+    },
+    {
+      "seed": 53,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "b75c2106641516ae72e6fad57fb56caaa4ff0f9201f81e63624e9207c23bf851"
+    },
+    {
+      "seed": 54,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "1df0a5567bb933100d9242df96f2ba7b74c535513f022ba14fc763353da06696"
+    },
+    {
+      "seed": 55,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "b749bb193df685386c39ad73f885d41cc99f5c3a563f2ec3babc003bf4e3a82f"
+    },
+    {
+      "seed": 56,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "43ff79b4768309420a384c032a4fedf31afe97334ded44f6a4cf17d72de95336"
+    },
+    {
+      "seed": 57,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "4b38798e697bdfb9fe1b75d1e0a1453f56e6d9a67b934eea9d6ef265626402b5"
+    },
+    {
+      "seed": 58,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "b7c8a3faced7088b3dd30f92fd936fbae7e9b2dc92ab73089e70b7a149759906"
+    },
+    {
+      "seed": 59,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "77bab0b4e127031c37046202ab2e7b34c06ddf42b0764c364ad0685fc55c17bc"
+    },
+    {
+      "seed": 60,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "394f657375300257eca305368f796d341001e63f69a1ba36419dab2c3f5119b8"
+    },
+    {
+      "seed": 61,
+      "n_attack": 1,
+      "n_benign": 0,
+      "sha256": "2216f20b59ccbda4bedf2a07e988bbc8b787eae8eb46122154395fe41a8d5117"
+    }
+  ]
+}

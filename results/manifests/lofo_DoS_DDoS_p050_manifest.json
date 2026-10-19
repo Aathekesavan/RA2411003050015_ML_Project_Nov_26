@@ -1,0 +1,41 @@
+{
+  "fold_name": "LOFO_DoS_DDoS",
+  "held_out_family": "DoS_DDoS",
+  "target_prevalence": 0.05,
+  "actual_prevalence": 0.049999,
+  "subsampled_side": "attack",
+  "is_low_power": false,
+  "random_seed": 42,
+  "scaler_path": "results\\models\\scaler_lofo_DoS_DDoS.joblib",
+  "split_row_counts": {
+    "train": 34258,
+    "val": 11420,
+    "test": 105263
+  },
+  "class_counts": {
+    "train": {
+      "Benign": 23245,
+      "BruteForce": 6862,
+      "WebAttack": 1607,
+      "PortScan": 1466,
+      "Bot": 1078
+    },
+    "val": {
+      "Benign": 7748,
+      "BruteForce": 2288,
+      "WebAttack": 536,
+      "PortScan": 489,
+      "Bot": 359
+    },
+    "test": {
+      "Benign": 100000,
+      "DoS_DDoS": 5263
+    }
+  },
+  "split_sha256_checksums": {
+    "train": "e4affa2a0aaf8eff5d53ad79577be7838750aa2e53c828c46f499075c8627b52",
+    "val": "c1f81c043aeaa3ad33890857c545130eb2aef1ce850706d6eb97b656b020d5de",
+    "test": "1a99342b279788b9507a6fc849e0977583fc149fc273ff68db5bc4e4928571d5"
+  },
+  "multi_seed_runs": []
+}

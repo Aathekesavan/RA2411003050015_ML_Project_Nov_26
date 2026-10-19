@@ -192,7 +192,8 @@ def run_unsw_leakage_audit(
     audit_csv = results_dir / "leakage_audit.csv"
     audit_df.to_csv(audit_csv, index=False)
     audit_md = results_dir / "leakage_audit.md"
-    audit_md.write_text(format_markdown_table(audit_df), encoding="utf-8")
+    from src.eval.report_utils import save_report_with_sidecar
+    save_report_with_sidecar(audit_md, format_markdown_table(audit_df), df=audit_df)
     logger.info(f"Saved UNSW leakage audit to {audit_csv}")
     return audit_df
 
@@ -211,8 +212,7 @@ def run_unsw_lofo_benchmark(
 
     adapter = UNSWNB15Adapter(max_rows=max_rows)
     if not adapter.is_available():
-        logger.warning("UNSW-NB15 raw data not found. Skipping UNSW benchmark.")
-        return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+        raise FileNotFoundError("UNSW-NB15 raw data not found in data/raw/unsw_nb15. Failing as required.")
 
     features_df, y_binary, family, family_group, data_card = adapter.load()
     df = adapter.build_unified_dataframe(features_df, y_binary, family, family_group)
@@ -325,6 +325,7 @@ def run_unsw_lofo_benchmark(
         logger.info(f"UNSW Group {grp} Fixed Best Single Detector: '{fixed_det}' (Inner PR-AUCs: {avg_scores})")
 
     seed_records = []
+    unsw_raw_records = []
 
     # Evaluate test sets with fixed single detector per fold
     for item in run_cache:
@@ -412,6 +413,33 @@ def run_unsw_lofo_benchmark(
                     "R_Precision": m_data.get("r_precision", 0.0),
                 })
 
+            # Record raw flow predictions for UNSW
+            for i in range(len(test_df)):
+                unsw_raw_records.append({
+                    "dataset": "UNSW-NB15",
+                    "fold": grp,
+                    "seed": int(seed),
+                    "prevalence": float(p),
+                    "flow_id": f"{grp}_{int(p*100)}pct_s{seed}_flow_{i}",
+                    "label": str(test_df["Label"].iloc[i]),
+                    "is_attack": int(y_test[i]),
+                    "supervised": np.float32(pred_dict["supervised"][i]),
+                    "iforest": np.float32(pred_dict["iforest"][i]),
+                    "autoencoder": np.float32(pred_dict["autoencoder"][i]),
+                    "mean_anomaly": np.float32(pred_dict["mean_anomaly"][i]),
+                    "fused_inner_mean": np.float32(pred_dict["fused_inner_mean"][i]),
+                    "fused_inner_iforest": np.float32(pred_dict["fused_inner_iforest"][i]),
+                    "fused_inner_ae": np.float32(pred_dict["fused_inner_ae"][i]),
+                    "rank_average": np.float32(pred_dict["rank_average"][i]),
+                    "gated_boost": np.float32(pred_dict["gated_boost"][i]),
+                })
+
+    # Save UNSW raw scores
+    from src.eval.report_utils import save_report_with_sidecar
+    unsw_raw_df = pd.DataFrame(unsw_raw_records)
+    unsw_raw_df.to_parquet(results_dir / "raw_scores.parquet", index=False)
+    logger.info(f"Saved UNSW raw scores to {results_dir / 'raw_scores.parquet'} ({len(unsw_raw_df):,} rows).")
+
     # Save Fusion Weight Stability & Variability Tables for UNSW
     fusion_stab_df = pd.DataFrame(fusion_stability_records)
     fusion_stab_df.to_csv(results_dir / "fusion_weight_stability.csv", index=False)
@@ -438,7 +466,7 @@ def run_unsw_lofo_benchmark(
             })
     variability_df = pd.DataFrame(variability_records)
     variability_df.to_csv(results_dir / "fusion_weight_variability.csv", index=False)
-    (results_dir / "fusion_weight_variability.md").write_text(format_markdown_table(variability_df), encoding="utf-8")
+    save_report_with_sidecar(results_dir / "fusion_weight_variability.md", format_markdown_table(variability_df), df=variability_df)
 
     # Combined stability MD
     combined_stab_content = (
@@ -447,7 +475,7 @@ def run_unsw_lofo_benchmark(
         + "\n\n## Fusion-Weight Variability & Degenerate Tuning Summary (UNSW-NB15)\n\n"
         + format_markdown_table(variability_df)
     )
-    (results_dir / "fusion_weight_stability.md").write_text(combined_stab_content, encoding="utf-8")
+    save_report_with_sidecar(results_dir / "fusion_weight_stability.md", combined_stab_content, df=fusion_stab_df)
 
     # Aggregate Benchmark & Differences
     seed_df = pd.DataFrame(seed_records)
@@ -504,179 +532,48 @@ def run_unsw_lofo_benchmark(
                 "R-Precision": f"{group['R_Precision'].mean():.4f} +/- {group['R_Precision'].std():.4f}",
             })
 
+    # Verify every fold has non-zero std across seeds
+    std_check_fails = []
+    for grp in groups_to_evaluate:
+        grp_rows = seed_df[(seed_df["Family_Group"] == grp) & (seed_df["Method"] == "Supervised_XGBoost")]
+        if len(grp_rows) > 1 and np.isclose(grp_rows["ROC_AUC"].std(), 0.0):
+            std_check_fails.append(grp)
+    if std_check_fails:
+        raise RuntimeError(f"Validation failed: Groups with zero standard deviation across seeds: {std_check_fails}")
+
+    bench_header = (
+        f"# UNSW-NB15 Multi-Seed LOFGO Benchmark\n\n"
+        f"- **Dataset Provenance:** UNSW-NB15 (pre-split partition, pooled and deduplicated)\n"
+        f"- **Seeds Evaluated:** 5 seeds ({', '.join(str(s) for s in seeds)})\n"
+        f"- **Note:** *Computed dynamically across 5 random seeds (mean +/- std)*\n\n"
+    )
     agg_df = pd.DataFrame(agg_records)
     agg_df.to_csv(results_dir / "unsw_nb15_benchmark.csv", index=False)
-    (results_dir / "unsw_nb15_benchmark.md").write_text(format_markdown_table(agg_df), encoding="utf-8")
+    save_report_with_sidecar(results_dir / "unsw_nb15_benchmark.md", bench_header + format_markdown_table(agg_df), df=agg_df)
 
+    diff_header = (
+        f"# UNSW-NB15 Fusion vs Reference Single Detectors Comparison\n\n"
+        f"- **Dataset Provenance:** UNSW-NB15 (pre-split partition, pooled and deduplicated)\n"
+        f"- **Seeds Evaluated:** 5 seeds ({', '.join(str(s) for s in seeds)})\n"
+        f"- **Note:** *Computed dynamically across 5 random seeds (mean +/- std)*\n\n"
+    )
     diff_df = pd.DataFrame(diff_records)
     diff_df.to_csv(results_dir / "fusion_vs_single_comparison.csv", index=False)
-    (results_dir / "fusion_vs_single_comparison.md").write_text(format_markdown_table(diff_df), encoding="utf-8")
+    save_report_with_sidecar(results_dir / "fusion_vs_single_comparison.md", diff_header + format_markdown_table(diff_df), df=diff_df)
 
     logger.info("UNSW-NB15 5-seed benchmark completed.")
     return seed_df, agg_df, diff_df, variability_df
 
 
 def generate_cross_dataset_summary() -> pd.DataFrame:
-    """Build summary table comparing datasets PROGRAMMATICALLY by reading saved result files."""
-    res_dir = Path("results")
-    
-    # Check physical file existence and count rows on disk
-    raw_dir = Path("data/raw")
-    cic_files = sorted(list(raw_dir.glob("*.parquet")) + list(raw_dir.glob("*.csv")))
-    unsw_files = sorted(list((raw_dir / "unsw_nb15").glob("*.parquet")))
-    
-    # 1. CIC-IDS2017 Programmatic Stats
-    cic_files_str = f"{len(cic_files)} files (Wednesday, Friday, Tuesday, Monday, Thursday)"
-    cic_raw_rows = 1_425_079  # Ingested from the 3 evaluated raw partitions
-    cic_dedup_rate = "24.61% (1,072,941 unique)"
+    """Build summary table comparing datasets strictly by delegating to generate_cross_dataset."""
+    from scripts.generate_cross_dataset import build_cross_dataset_comparison
+    build_cross_dataset_comparison()
+    csv_path = Path("results/cross_dataset_comparison.csv")
+    if not csv_path.exists():
+        raise FileNotFoundError(f"Generated comparison CSV not found at {csv_path}")
+    return pd.read_csv(csv_path)
 
-    # Read CIC Leakage Audit
-    cic_leakage_csv = res_dir / "leakage_audit.csv"
-    if cic_leakage_csv.exists():
-        cic_leak_df = pd.read_csv(cic_leakage_csv)
-        # PortScan primary numbers
-        ps_row = cic_leak_df[cic_leak_df["Family"] == "PortScan"].iloc[0]
-        cic_rand_leak = f"{ps_row['Rand_Near_Leakage_3dec_Pct']:.1f}% (3dec), {ps_row['Rand_Log1p_Near_Leakage_3dec_Pct']:.1f}% (log1p), 98.3% (NN eps)"
-        cic_lofo_leak = f"{ps_row['LOFO_Near_Leakage_3dec_Pct']:.1f}% ({int(ps_row['LOFO_Total_Matches_3dec_Count'])}/{int(ps_row['Test_Positives_LOFO'])}), {ps_row['LOFO_Log1p_Near_Leakage_3dec_Pct']:.1f}% (log1p), 0.0% (NN eps)"
-    else:
-        cic_rand_leak = "88.9% (3dec), 4.3% (log1p)"
-        cic_lofo_leak = "3.3% (65/1956), 0.0% (log1p)"
-
-    # Read CIC Supervised ROC-AUC
-    cic_bench_csv = res_dir / "lofo_benchmark_multi_seed.csv"
-    if cic_bench_csv.exists():
-        cic_b_df = pd.read_csv(cic_bench_csv)
-        # PortScan 5% prevalence
-        ps_sup = cic_b_df[(cic_b_df["Family"] == "PortScan") & (cic_b_df["Prevalence"] == "5.0%") & (cic_b_df["Method"] == "Supervised_XGBoost")].iloc[0]["ROC_AUC"]
-        ps_ctrl = cic_b_df[(cic_b_df["Family"] == "PortScan") & (cic_b_df["Prevalence"] == "5.0%") & (cic_b_df["Method"] == "Family_Seen_Control")].iloc[0]["ROC_AUC"]
-        cic_roc_comp = f"{ps_ctrl} vs {ps_sup}"
-    else:
-        cic_roc_comp = "0.9999 vs 0.7151 (-28.48 pp)"
-
-    # Read CIC Best Detector and Fusion Gain
-    cic_diff_csv = res_dir / "fusion_vs_single_comparison.csv"
-    if cic_diff_csv.exists():
-        cic_d_df = pd.read_csv(cic_diff_csv)
-        ps_fus = cic_d_df[(cic_d_df["Family"] == "PortScan") & (cic_d_df["Prevalence"] == "5.0%") & (cic_d_df["Method"] == "Fusion_XGB_AE")].iloc[0]
-        cic_best_det = "Mean_Anomaly"
-        cic_fusion_gain = f"{ps_fus['Delta_PR_AUC_pp']} {ps_fus['95% CI (PR-AUC pp)']}"
-    else:
-        cic_best_det = "Mean_Anomaly"
-        cic_fusion_gain = "+24.19 pp [+19.77, +28.62]"
-
-    # 2. UNSW-NB15 Programmatic Stats
-    unsw_files_str = f"{len(unsw_files)} files (train.parquet, test.parquet)"
-    unsw_raw_rows = 257_673
-    unsw_dedup_rate = "47.67% (134,842 unique)"
-
-    unsw_leak_csv = res_dir / "unsw_nb15" / "leakage_audit.csv"
-    if unsw_leak_csv.exists():
-        unsw_leak_df = pd.read_csv(unsw_leak_csv)
-        recon_row = unsw_leak_df[unsw_leak_df["Family_Group"] == "Recon_Analysis"].iloc[0]
-        unsw_rand_leak = f"{recon_row['Rand_Near_Leakage_3dec_Pct']:.1f}% (3dec), {recon_row['Rand_Log1p_Leakage_3dec_Pct']:.1f}% (log1p), {recon_row['Rand_Pct_Within_Eps']:.1f}% (NN eps)"
-        unsw_lofo_leak = f"{recon_row['LOFO_Near_Leakage_3dec_Pct']:.1f}% ({int(recon_row['LOFO_Near_Matches_3dec'])}/{int(recon_row['LOFO_Test_Pos'])}), {recon_row['LOFO_Log1p_Leakage_3dec_Pct']:.1f}% (log1p), {recon_row['LOFO_Pct_Within_Eps']:.1f}% (NN eps)"
-    else:
-        unsw_rand_leak = "82.4% (3dec), 12.1% (log1p), 85.0% (NN eps)"
-        unsw_lofo_leak = "0.0% (0/7819), 0.0% (log1p), 0.0% (NN eps)"
-
-    unsw_bench_csv = res_dir / "unsw_nb15" / "unsw_nb15_benchmark.csv"
-    if unsw_bench_csv.exists():
-        unsw_b_df = pd.read_csv(unsw_bench_csv)
-        u_sup = unsw_b_df[(unsw_b_df["Family_Group"] == "Recon_Analysis") & (unsw_b_df["Prevalence"] == "5.0%") & (unsw_b_df["Method"] == "Supervised_XGBoost")].iloc[0]["ROC_AUC"]
-        u_ctrl = unsw_b_df[(unsw_b_df["Family_Group"] == "Recon_Analysis") & (unsw_b_df["Prevalence"] == "5.0%") & (unsw_b_df["Method"] == "Family_Seen_Control")].iloc[0]["ROC_AUC"]
-        unsw_roc_comp = f"{u_ctrl} vs {u_sup}"
-    else:
-        unsw_roc_comp = "0.9776 vs 0.9236 (-5.40 pp)"
-
-    unsw_diff_csv = res_dir / "unsw_nb15" / "fusion_vs_single_comparison.csv"
-    if unsw_diff_csv.exists():
-        unsw_d_df = pd.read_csv(unsw_diff_csv)
-        u_fus = unsw_d_df[(unsw_d_df["Family_Group"] == "Recon_Analysis") & (unsw_d_df["Prevalence"] == "5.0%") & (unsw_d_df["Method"] == "Fusion_XGB_Mean_Anomaly")].iloc[0]
-        unsw_best_det = "Autoencoder"
-        unsw_fusion_gain = f"{u_fus['Delta_PR_AUC_pp']} {u_fus['95% CI (PR-AUC pp)']}"
-    else:
-        unsw_best_det = "Autoencoder"
-        unsw_fusion_gain = "+26.81 pp [+23.10, +30.50]"
-
-    records = [
-        {
-            "dataset": "CIC-IDS2017",
-            "files used": cic_files_str,
-            "raw rows": f"{cic_raw_rows:,}",
-            "duplication rate after raw load": cic_dedup_rate,
-            "random-split leakage (3-dec, log1p, NN)": cic_rand_leak,
-            "LOFO leakage (same, raw counts)": cic_lofo_leak,
-            "family-seen vs LOFO supervised ROC-AUC": cic_roc_comp,
-            "best detector": cic_best_det,
-            "fusion gain vs best single with CI": cic_fusion_gain,
-        },
-        {
-            "dataset": "UNSW-NB15",
-            "files used": unsw_files_str,
-            "raw rows": f"{unsw_raw_rows:,}",
-            "duplication rate after raw load": unsw_dedup_rate,
-            "random-split leakage (3-dec, log1p, NN)": unsw_rand_leak,
-            "LOFO leakage (same, raw counts)": unsw_lofo_leak,
-            "family-seen vs LOFO supervised ROC-AUC": unsw_roc_comp,
-            "best detector": unsw_best_det,
-            "fusion gain vs best single with CI": unsw_fusion_gain,
-        },
-        {
-            "dataset": "LYCOS-IDS2017",
-            "files used": "None (files not found on disk)",
-            "raw rows": "n/a",
-            "duplication rate after raw load": "n/a",
-            "random-split leakage (3-dec, log1p, NN)": "n/a",
-            "LOFO leakage (same, raw counts)": "n/a",
-            "family-seen vs LOFO supervised ROC-AUC": "n/a",
-            "best detector": "n/a",
-            "fusion gain vs best single with CI": "n/a",
-        },
-        {
-            "dataset": "CSE-CIC-IDS2018",
-            "files used": "None (files not found on disk)",
-            "raw rows": "n/a",
-            "duplication rate after raw load": "n/a",
-            "random-split leakage (3-dec, log1p, NN)": "n/a",
-            "LOFO leakage (same, raw counts)": "n/a",
-            "family-seen vs LOFO supervised ROC-AUC": "n/a",
-            "best detector": "n/a",
-            "fusion gain vs best single with CI": "n/a",
-        },
-    ]
-
-    cross_df = pd.DataFrame(records)
-    cross_csv = res_dir / "cross_dataset_comparison.csv"
-    cross_df.to_csv(cross_csv, index=False)
-
-    # Narrative explanation for discrepancies and missing datasets
-    explanation_md = """
-# Cross-Dataset Generalization & Leakage Audit Summary
-
-This table is **programmatically compiled** by directly parsing artifact and manifest files from disk:
-
-""" + format_markdown_table(cross_df) + """
-
----
-
-### Dataset Provenance & Missing Datasets Note
-- **CIC-IDS2017**: 8 raw partition files found and ingested in `data/raw/`. 1,425,079 raw rows loaded; 1,072,941 unique flows after exact deduplication (24.61% duplication rate).
-- **UNSW-NB15**: 2 raw parquet files (`train.parquet`, `test.parquet`) found and ingested in `data/raw/unsw_nb15/`. 257,673 raw rows loaded; 134,842 unique flows after exact deduplication (47.67% duplication rate).
-- **LYCOS-IDS2017 & CSE-CIC-IDS2018**: **Files NOT found on disk**. Per instructions, their rows are left unfilled (`n/a`) rather than populated with placeholder estimates.
-
----
-
-### Reconciliation of Discrepancies in Reported Metrics
-1. **PortScan Leakage Discrepancy (88.93% vs 99.4%)**:
-   - In Prompt 2, **88.93%** was reported as the 3-decimal near-duplicate leakage rate on the subsampled 60,000-row parquet after MinMax scaling (`results/leakage_audit.csv`, row 3: 522 matches out of 587 random test positives = 88.9267%).
-   - In Prompt 4, **99.4%** was reported as the near-duplicate collision rate under coarse 1-decimal rounding / sub-microsecond feature jitter on the full dataset before subsampling. Automated port scanners emit thousands of probe packets where 71 of 76 features are identical; standard exact deduplication only separates them due to 1–4 microsecond differences in `Flow Duration` and inter-arrival times, creating near-memorization under random splitting that LOFO completely eliminates.
-2. **Weight Stability Across Folds (CIC vs UNSW)**:
-   - On **CIC-IDS2017** (3 folds: DoS, PortScan, BruteForce), BruteForce exhibited degenerate tuning ($w_1 = 1.0$ in 4/5 seeds) because inner-LOFO only had 2 attack families available for training, causing the anomaly detector to suffer high false alarm rates on brute-force login attempts.
-   - On **UNSW-NB15** (5 folds: Recon_Analysis, Exploit_Payload, Fuzzers, DoS, Generic), each inner-LOFO training set contains 4 diverse attack families. This greater attack diversity stabilizes the inner-LOFO weights, mitigating single-model collapse across folds.
-"""
-    (res_dir / "cross_dataset_comparison.md").write_text(explanation_md, encoding="utf-8")
-    logger.info(f"Programmatically generated cross-dataset comparison to {cross_csv}")
-    return cross_df
 
 
 def main():
