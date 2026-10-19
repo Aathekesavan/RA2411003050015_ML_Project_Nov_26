@@ -1,0 +1,7 @@
+Fold,Prevalence,Method,ROC_AUC,PR_AUC,Recall@1%FAR
+BruteForce_WebAttack_Merged,1.0%,Ablation_Gated_Boost,0.8194 +/- 0.0358,0.0515 +/- 0.0393,6.93% +/- 8.86%
+BruteForce_WebAttack_Merged,1.0%,Autoencoder,0.8013 +/- 0.0379,0.0251 +/- 0.0076,0.00% +/- 0.00%
+BruteForce_WebAttack_Merged,1.0%,Supervised_XGBoost,0.8425 +/- 0.0523,0.1008 +/- 0.0162,17.05% +/- 1.08%
+BruteForce_WebAttack_Merged,5.0%,Ablation_Gated_Boost,0.8187 +/- 0.0349,0.1674 +/- 0.0796,6.55% +/- 8.36%
+BruteForce_WebAttack_Merged,5.0%,Autoencoder,0.8010 +/- 0.0375,0.1152 +/- 0.0293,0.00% +/- 0.00%
+BruteForce_WebAttack_Merged,5.0%,Supervised_XGBoost,0.8408 +/- 0.0499,0.2962 +/- 0.0308,16.74% +/- 0.26%

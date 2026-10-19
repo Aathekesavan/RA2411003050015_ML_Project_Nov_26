@@ -350,7 +350,7 @@ def test_production_score_doc_exists_and_cites_inner_lofo_pr_aucs():
     assert ("Gated Boost" in text or "Gated-Boost" in text or "gated_boost" in text)
     assert "Autoencoder" in text
     assert ("Rank-Average" in text or "rank_average" in text)
-    assert ("0.5873" in text or "0.5063" in text or "0.5284" in text)  # exact validation PR-AUCs
+    assert ("0.5118" in text or "0.7189" in text or "0.7157" in text)  # exact validation PR-AUCs
     assert ("Monitor-Only" in text or "monitor-only" in text or "MONITOR-ONLY" in text)
     assert "Bot" in text
     assert "WebAttack" in text

@@ -61,6 +61,28 @@ Every raw partition provided in the official CIC-IDS2017 distribution was loaded
 2. **Skipped Classes**:
    - `Infiltration`: Only 36 unique flows in the entire 2.83M raw dataset (< 500 unique flows threshold). Skipped from LOFO evaluation per protocol to prevent low-power degenerate evaluation.
 
+### 2.3 Joint Holdout Evaluation of Related Groups ({BruteForce, WebAttack})
+
+To investigate semantic transfer and cross-family feature overlap between SSH/FTP brute force and Web application attacks (including Web Brute Force, XSS, and SQL Injection), an authorized 5-seed joint holdout evaluation (`BruteForce_WebAttack_Merged`) was executed holding out both families simultaneously from training:
+
+| Holdout Scheme | Prevalence | Method | ROC-AUC | PR-AUC | Recall@1%FAR |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Separate: BruteForce** | 5.0% | Supervised_XGBoost | 0.9202 +/- 0.0402 | 0.3149 +/- 0.0443 | 4.18% +/- 3.16% |
+| | 5.0% | Autoencoder | 0.8034 +/- 0.0204 | 0.1144 +/- 0.0137 | 0.00% +/- 0.00% |
+| | 5.0% | Ablation_Gated_Boost | 0.8042 +/- 0.0212 | 0.1199 +/- 0.0226 | 1.55% +/- 2.45% |
+| **Separate: WebAttack** | 5.0% | Supervised_XGBoost | 0.9824 +/- 0.0032 | 0.7481 +/- 0.0181 | 57.22% +/- 40.18% |
+| | 5.0% | Autoencoder | 0.7414 +/- 0.0666 | 0.0995 +/- 0.0391 | 0.00% +/- 0.00% |
+| | 5.0% | Ablation_Gated_Boost | 0.7535 +/- 0.0667 | 0.1053 +/- 0.0395 | 0.77% +/- 1.30% |
+| **Merged: {BruteForce, WebAttack}** | 5.0% | Supervised_XGBoost | 0.8408 +/- 0.0499 | 0.2962 +/- 0.0308 | 16.74% +/- 0.26% |
+| | 5.0% | Autoencoder | 0.8010 +/- 0.0375 | 0.1152 +/- 0.0293 | 0.00% +/- 0.00% |
+| | 5.0% | Ablation_Gated_Boost | 0.8187 +/- 0.0349 | 0.1674 +/- 0.0796 | 6.55% +/- 8.36% |
+| **Merged: {BruteForce, WebAttack}** | 1.0% | Supervised_XGBoost | 0.8425 +/- 0.0523 | 0.1008 +/- 0.0162 | 17.05% +/- 1.08% |
+| | 1.0% | Autoencoder | 0.8013 +/- 0.0379 | 0.0251 +/- 0.0076 | 0.00% +/- 0.00% |
+| | 1.0% | Ablation_Gated_Boost | 0.8194 +/- 0.0358 | 0.0515 +/- 0.0393 | 6.93% +/- 8.86% |
+
+- **Empirical Artifact**: [`results/merged_holdout_summary.csv`](file:///d:/sentinelx/results/merged_holdout_summary.csv)
+- **Finding**: In separate LOFO, WebAttack benefits from having BruteForce present in training data (Supervised XGBoost achieves 0.7481 PR-AUC). When both related families are held out jointly, supervised PR-AUC drops sharply to 0.2962, confirming semantic leakage between related network attack behaviors when separated across folds.
+
 ---
 
 ## 3. Measured Baseline: Naive Random Split Performance

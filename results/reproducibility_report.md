@@ -1,8 +1,8 @@
 # SentinelX-Shift Reproducibility Audit & Benchmark Verification
 
-- **Run ID:** `run_20261019_99c9f0a`
-- **Git Commit Hash:** `99c9f0a`
-- **Verification Timestamp:** `2026-10-19 06:25:21 UTC`
+- **Run ID:** `run_20261019_eddc08e`
+- **Git Commit Hash:** `eddc08e-dirty`
+- **Verification Timestamp:** `2026-10-19 14:23:14 UTC`
 - **Note:** *Computed entirely from raw_scores.parquet*
 
 ---
@@ -10,7 +10,7 @@
 ## 1. Dataset-Level Generalization Statement
 
 > [!IMPORTANT] Formal Benchmark Finding
-> Gated-boost fusion improved PR-AUC by +18.02 pp [-1.63, +40.05] over the rule-selected single detector and by +8.10 pp [+0.18, +20.59] over the Autoencoder across 5 folds at 5% prevalence.
+> Gated-boost fusion improved PR-AUC by +18.01 pp [-1.64, +40.04] over the rule-selected single detector and by +8.11 pp [+0.17, +20.59] over the Autoencoder across 5 folds at 5% prevalence.
 
 ---
 

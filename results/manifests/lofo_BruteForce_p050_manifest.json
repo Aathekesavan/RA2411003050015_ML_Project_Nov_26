@@ -5,7 +5,7 @@
   "actual_prevalence": 0.049999,
   "subsampled_side": "attack",
   "is_low_power": false,
-  "random_seed": 42,
+  "random_seed": 404,
   "scaler_path": "results\\models\\scaler_lofo_BruteForce.joblib",
   "split_row_counts": {
     "train": 32325,
@@ -33,9 +33,9 @@
     }
   },
   "split_sha256_checksums": {
-    "train": "61d2a417bc53291ed4df0d6238e11e535de0f38f7e5e5c82f3e8c6ddc6977089",
-    "val": "e1978ebbcb242399df44ddd891e80c784526b723484a8291704cf4686e749f8c",
-    "test": "61f95ba144739d49cb970e80b624707091076374560db81524c2c0179fb580d0"
+    "train": "0dcdf60af25aba81919f67dbf8917b6be97140d14de42d64b073d9e4eb29c165",
+    "val": "fabee1161a5569c1155e06bdc27cf3e9a781e1cd1526c3e7cdce2681140d3235",
+    "test": "3f7e3d096c22df2578a8b767e3a925f8e42cf88dfc306b0aad93a94f4eeb1bca"
   },
   "multi_seed_runs": []
 }

@@ -1,0 +1,133 @@
+{
+  "source_file": "fusion_weight_variability.md",
+  "generated_at": "2026-10-19T12:41:00.492158",
+  "total_numbers_recorded": 4,
+  "source_numbers": [
+    0.0,
+    1.0,
+    2.0,
+    5.0
+  ],
+  "data": [
+    {
+      "Family_Group": "Recon_Analysis",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Recon_Analysis",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Recon_Analysis",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Exploit_Payload",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Exploit_Payload",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Exploit_Payload",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Fuzzers",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Fuzzers",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Fuzzers",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "DoS",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "DoS",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "DoS",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Generic",
+      "Fusion_Signal": "XGB + Mean_Anomaly",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Generic",
+      "Fusion_Signal": "XGB + IForest",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    },
+    {
+      "Family_Group": "Generic",
+      "Fusion_Signal": "XGB + Autoencoder",
+      "Mean_w1": "1.00 +/- 0.00",
+      "Mean_w2": "0.00 +/- 0.00",
+      "Extreme_Seeds_Count (w1=1.0 or w2=1.0)": "5/5",
+      "Tuning_Status": "Degenerate Tuning"
+    }
+  ]
+}

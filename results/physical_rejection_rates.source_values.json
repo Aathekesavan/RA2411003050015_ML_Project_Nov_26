@@ -1,14 +1,14 @@
 {
   "source_file": "physical_rejection_rates.md",
-  "generated_at": "2026-10-19T12:01:32.605213",
+  "generated_at": "2026-10-19T12:43:35.870176",
   "total_numbers_recorded": 22,
   "source_numbers": [
     0.0,
     1.0,
     2.0,
-    2.43,
-    3.39,
-    4.65,
+    2.42,
+    3.4,
+    4.67,
     5.0,
     6.0,
     10.0,
@@ -37,7 +37,7 @@
       "Clamping_Rate_Pct": "44.00%",
       "Post_Clamping_Rejections": 0,
       "Final_Rejection_Rate_Pct": "0.00%",
-      "Mean_Relative_Change_Pct": "2.43%",
+      "Mean_Relative_Change_Pct": "2.42%",
       "Top_Clamped_Invariant": "Rule 6 (2-Packet / Equal IAT Duration Sync) (220)"
     },
     {
@@ -50,7 +50,7 @@
       "Clamping_Rate_Pct": "47.60%",
       "Post_Clamping_Rejections": 0,
       "Final_Rejection_Rate_Pct": "0.00%",
-      "Mean_Relative_Change_Pct": "3.39%",
+      "Mean_Relative_Change_Pct": "3.40%",
       "Top_Clamped_Invariant": "Rule 6 (2-Packet / Equal IAT Duration Sync) (220)"
     },
     {
@@ -63,7 +63,7 @@
       "Clamping_Rate_Pct": "51.20%",
       "Post_Clamping_Rejections": 0,
       "Final_Rejection_Rate_Pct": "0.00%",
-      "Mean_Relative_Change_Pct": "4.65%",
+      "Mean_Relative_Change_Pct": "4.67%",
       "Top_Clamped_Invariant": "Rule 6 (2-Packet / Equal IAT Duration Sync) (220)"
     }
   ]

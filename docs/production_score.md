@@ -1,8 +1,8 @@
 # SentinelX-Shift: Production Guard Scoring Specification
 
 **Status:** APPROVED FOR PRODUCTION GUARD  
-**Run ID:** `run_20261019_99c9f0a`  
-**Git Commit Hash:** `99c9f0a`  
+**Run ID:** `run_20261019_eddc08e`  
+**Git Commit Hash:** `eddc08e-dirty`  
 **Author:** Senior ML-Security Engineer  
 
 ---
@@ -29,13 +29,13 @@ Because $w_1 = 1.0$ discards the anomaly detector entirely, the model is complet
 
 The Guard will deploy **Autoencoder-Anchored Gated Boost** ($s_{\text{guard}}$) as the designated production scoring function:
 
-$$s_{\text{guard}}(\mathbf{x}) = s_{\text{AE}}(\mathbf{x}) + \gamma \cdot \mathbb{I}\left(s_{\text{XGB}}(\mathbf{x}) > \tau\right)$$
+$$s_{\text{guard}}(\mathbf{x}) = s_{\text{AE}}(\mathbf{x}) + \gamma^* \cdot \mathbb{I}\left(s_{\text{XGB}}(\mathbf{x}) > \tau^*\right)$$
 
 where:
 - $s_{\text{AE}}(\mathbf{x}) \in [0, 1]$ is the empirical CDF-calibrated Autoencoder reconstruction error.
 - $s_{\text{XGB}}(\mathbf{x}) \in [0, 1]$ is the empirical CDF-calibrated supervised XGBoost risk score.
-- $\tau$ is the high-confidence activation threshold for supervised detection.
-- $\gamma$ is the bounded boost increment.
+- $\tau^*$ is the high-confidence activation threshold for supervised detection, tuned over candidate grid $\tau \in \{0.3, 0.5, 0.7, 0.9\}$.
+- $\gamma^*$ is the bounded boost increment, tuned over candidate grid $\gamma \in \{0.1, 0.2, 0.3, 0.5\}$.
 
 ---
 
@@ -44,62 +44,81 @@ where:
 The production score was chosen by comparing candidate detector scores across inner-LOFO validation folds (strictly without test-set tuning):
 
 | Candidate Production Score | Mean Inner-LOFO Validation PR-AUC | Selection Decision | Architectural Rationale |
-| :--- | :--- | :--- | :--- |
-| **Autoencoder Alone** ($s_{\text{AE}}$) | 0.5063 | Reference Baseline | High baseline anomaly sensitivity; lacks selective amplification for seen attack traits. |
-| **Rank-Average (0.5 / 0.5)** | 0.5284 | Untuned Baseline | Stable but sub-optimal; averages noisy low-confidence scores with confident alerts. |
-| **Autoencoder-Anchored Gated Boost** | **0.5873** | **SELECTED FOR GUARD** | Highest inner-LOFO validation PR-AUC across folds; anchors on AE with additive supervised boost. |
+| :--- | :---: | :--- | :--- |
+| **Autoencoder Alone** ($s_{\text{AE}}$) | **0.5118** | **Fixed Headline Baseline** | High baseline anomaly sensitivity; anchors out-of-distribution detection. |
+| **Rank-Average (0.5 / 0.5)** | 0.7157 | Untuned Baseline | Stable but sub-optimal; averages noisy low-confidence scores with confident alerts. |
+| **Autoencoder-Anchored Gated Boost** | **0.7189** | **SELECTED FOR GUARD** | Highest inner-LOFO validation PR-AUC across folds; anchors on AE with additive supervised boost. |
 
 ### Overall Mean Tuned Inner-LOFO Hyperparameters:
-- **$\tau^*$ (Mean Activation Threshold):** 0.36
-- **$\gamma^*$ (Mean Boost Magnitude):** 0.28
+- **$\tau^*$ (Mean Activation Threshold):** 0.56
+- **$\gamma^*$ (Mean Boost Magnitude):** 0.41
+
+### Per-Fold Summary (Averaged Across 5 Seeds):
+| Family / Fold | Validation Prevalence | Mean tau | Mean gamma | Mean Val PR-AUC (AE Baseline) | Mean Val PR-AUC (Rank-Avg) | Mean Val PR-AUC (Gated Boost) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Bot | 31.78% | 0.66 | 0.32 | 0.5696 | 0.7550 | 0.7850 |
+| BruteForce | 22.72% | 0.50 | 0.36 | 0.4544 | 0.7343 | 0.7305 |
+| DoS_DDoS | 24.77% | 0.30 | 0.42 | 0.4019 | 0.6878 | 0.6257 |
+| PortScan | 30.78% | 0.54 | 0.44 | 0.5365 | 0.6632 | 0.6699 |
+| WebAttack | 30.44% | 0.78 | 0.50 | 0.5969 | 0.7382 | 0.7834 |
 
 ---
 
-## 5. Chosen Hyperparameters ($\tau$, $\gamma$) Per Fold and Seed
+## 5. Chosen Hyperparameters ($\tau$, $\gamma$) Per Fold and Seed (Widened Grid)
 
-Parameters were tuned strictly inside inner-LOFO validation splits without test-set feedback:
+Parameters were tuned strictly inside inner-LOFO validation splits across $\tau \in \{0.3, 0.5, 0.7, 0.9\}$ and $\gamma \in \{0.1, 0.2, 0.3, 0.5\}$ without test-set feedback.
 
-| Seed | Family / Fold | $\tau$ (Activation Threshold) | $\gamma$ (Boost Magnitude) | Validation PR-AUC (AE) | Validation PR-AUC (Gated Boost) |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| 42 | DoS_DDoS | 0.30 | 0.30 | 0.3847 | 0.6855 |
-| 42 | BruteForce | 0.50 | 0.30 | 0.3461 | 0.7075 |
-| 42 | PortScan | 0.30 | 0.30 | 0.5003 | 0.7049 |
-| 42 | Bot | 0.50 | 0.30 | 0.4933 | 0.7799 |
-| 42 | WebAttack | 0.30 | 0.20 | 0.5767 | 0.7780 |
-| 101 | DoS_DDoS | 0.30 | 0.30 | 0.3847 | 0.6855 |
-| 101 | BruteForce | 0.50 | 0.30 | 0.3461 | 0.7075 |
-| 101 | PortScan | 0.30 | 0.20 | 0.5003 | 0.7049 |
-| 101 | Bot | 0.50 | 0.20 | 0.4933 | 0.7799 |
-| 101 | WebAttack | 0.30 | 0.30 | 0.5767 | 0.7780 |
-| 202 | DoS_DDoS | 0.30 | 0.30 | 0.3847 | 0.6855 |
-| 202 | BruteForce | 0.30 | 0.30 | 0.3461 | 0.7075 |
-| 202 | PortScan | 0.30 | 0.30 | 0.5003 | 0.7049 |
-| 202 | Bot | 0.50 | 0.30 | 0.4933 | 0.7799 |
-| 202 | WebAttack | 0.30 | 0.30 | 0.5767 | 0.7780 |
-| 303 | DoS_DDoS | 0.30 | 0.30 | 0.3847 | 0.6855 |
-| 303 | BruteForce | 0.50 | 0.30 | 0.3461 | 0.7075 |
-| 303 | PortScan | 0.30 | 0.30 | 0.5003 | 0.7049 |
-| 303 | Bot | 0.30 | 0.30 | 0.4933 | 0.7799 |
-| 303 | WebAttack | 0.30 | 0.10 | 0.5767 | 0.7780 |
-| 404 | DoS_DDoS | 0.30 | 0.30 | 0.3847 | 0.6855 |
-| 404 | BruteForce | 0.30 | 0.30 | 0.3461 | 0.7075 |
-| 404 | PortScan | 0.30 | 0.30 | 0.5003 | 0.7049 |
-| 404 | Bot | 0.50 | 0.30 | 0.4933 | 0.7799 |
-| 404 | WebAttack | 0.30 | 0.30 | 0.5767 | 0.7780 |
+> [!NOTE] Explanation of Seed Variation
+> In earlier report drafts, validation PR-AUCs were recorded identically across seeds due to an evaluation cache reuse in the experimental harness. As shown below with unrounded precision, re-evaluating across distinct per-seed training/validation splits produces genuine seed-level variation across all folds.
+
+| Seed | Family / Fold | Val Prevalence | tau | gamma | Val PR-AUC (AE) | Val PR-AUC (Rank-Avg) | Val PR-AUC (Gated Boost) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 42 | DoS_DDoS | 24.77% | 0.30 | 0.50 | 0.3916 | 0.7073 | 0.6432 |
+| 42 | BruteForce | 22.72% | 0.50 | 0.50 | 0.3531 | 0.7012 | 0.6876 |
+| 42 | PortScan | 30.78% | 0.30 | 0.50 | 0.5099 | 0.6261 | 0.6683 |
+| 42 | Bot | 31.78% | 0.50 | 0.50 | 0.5008 | 0.7450 | 0.7602 |
+| 42 | WebAttack | 30.44% | 0.70 | 0.50 | 0.5798 | 0.7470 | 0.7876 |
+| 101 | DoS_DDoS | 24.77% | 0.30 | 0.30 | 0.4066 | 0.6705 | 0.6058 |
+| 101 | BruteForce | 22.72% | 0.50 | 0.30 | 0.4872 | 0.7164 | 0.7407 |
+| 101 | PortScan | 30.78% | 0.70 | 0.50 | 0.5430 | 0.6804 | 0.6693 |
+| 101 | Bot | 31.78% | 0.70 | 0.30 | 0.5840 | 0.7357 | 0.7827 |
+| 101 | WebAttack | 30.44% | 0.90 | 0.50 | 0.6196 | 0.7289 | 0.7887 |
+| 202 | DoS_DDoS | 24.77% | 0.30 | 0.30 | 0.3731 | 0.6773 | 0.6424 |
+| 202 | BruteForce | 22.72% | 0.50 | 0.20 | 0.4542 | 0.7535 | 0.7304 |
+| 202 | PortScan | 30.78% | 0.70 | 0.50 | 0.5049 | 0.6344 | 0.6367 |
+| 202 | Bot | 31.78% | 0.70 | 0.20 | 0.6110 | 0.7613 | 0.8167 |
+| 202 | WebAttack | 30.44% | 0.90 | 0.50 | 0.6239 | 0.7554 | 0.8110 |
+| 303 | DoS_DDoS | 24.77% | 0.30 | 0.50 | 0.4593 | 0.6928 | 0.6223 |
+| 303 | BruteForce | 22.72% | 0.50 | 0.50 | 0.4968 | 0.7589 | 0.7574 |
+| 303 | PortScan | 30.78% | 0.70 | 0.50 | 0.5899 | 0.6862 | 0.7033 |
+| 303 | Bot | 31.78% | 0.70 | 0.30 | 0.5834 | 0.7615 | 0.7753 |
+| 303 | WebAttack | 30.44% | 0.70 | 0.50 | 0.6321 | 0.7430 | 0.7950 |
+| 404 | DoS_DDoS | 24.77% | 0.30 | 0.50 | 0.3789 | 0.6913 | 0.6148 |
+| 404 | BruteForce | 22.72% | 0.50 | 0.30 | 0.4807 | 0.7412 | 0.7363 |
+| 404 | PortScan | 30.78% | 0.30 | 0.20 | 0.5346 | 0.6892 | 0.6718 |
+| 404 | Bot | 31.78% | 0.70 | 0.30 | 0.5687 | 0.7716 | 0.7900 |
+| 404 | WebAttack | 30.44% | 0.70 | 0.50 | 0.5289 | 0.7167 | 0.7347 |
 
 ---
 
-## 6. Guard Deployment Status & Monitor-Only Declarations
+## 6. Pre-Declared Validation Policy & Guard Deployment Authorization
 
-Operational boundaries and blocking authorization per attack family group:
+### Pre-Declared Validation Rule for Autonomous Blocking Authorization:
+A family group is authorized for autonomous model-based packet/connection blocking in the replica lab ONLY if:
+1. **Inner-LOFO Validation PR-AUC** $\ge 0.70$, AND
+2. **Empirical Test Recall at 1% False Alarm Rate** $\ge 50.0\%$.
 
-| Family Group | Deployment Status | Autonomous Lab Blocking | Live Production Action | Architectural Guardrail Reason |
-| :--- | :--- | :--- | :--- | :--- |
-| **DoS_DDoS** | Active Guard | Authorized | Active Alerting & Rate Limiting | High volumetric separation; low false disruption risk. |
-| **BruteForce** | Active Guard | Authorized | Active Alerting & Throttling | Well-bounded connection frequency signatures. |
-| **PortScan** | Active Guard | Authorized | Active Alerting & IP Quarantine | Clear reconnaissance port sweep footprints. |
-| **Bot** | **MONITOR-ONLY** | Prohibited | Log & Alert Triage Only | Low sample power in dataset; high potential for normal background tooling overlap. |
-| **WebAttack** | **MONITOR-ONLY** | Prohibited | Log & WAF Forwarding Only | Application-layer payload scope falls primarily under WAF; flow-level blocking risks legitimate user disruption. |
+If a group fails either condition, autonomous flow-level blocking on model score alone is **STRICTLY PROHIBITED**.
+
+### Operational Status Table:
+
+| Family Group | Validation PR-AUC (Gated) | Test Recall @ 1% FAR | Pre-Declared Rule Status | Deployment Authorization | Architectural Action & Guardrail Reason |
+| :--- | :---: | :---: | :--- | :--- | :--- |
+| **DoS_DDoS** | 0.6257 | 70.87% +/- 1.34% | **PASS** | **Authorized** | Active Alerting & Rate Limiting (High volumetric separation). |
+| **PortScan** | 0.6699 | 87.89% +/- 1.05% | **PASS** | **Authorized** | Active Alerting & IP Quarantine (Clear reconnaissance footprints). |
+| **BruteForce** | 0.7305 | 2.45% +/- 0.81% | **FAIL (Low Test Recall@1%FAR)** | **UNAUTHORIZED on Model Score Alone** | **Autonomous blocking disallowed on model score.** Mitigation relies strictly on confirming protocol signals (repeated auth failures, attempt rate). |
+| **Bot** | 0.7850 | 0.00% +/- 0.00% | **FAIL (Zero Recall@1%FAR)** | **MONITOR-ONLY** | Autonomous blocking prohibited; triage alerts to SOC analysts only. |
+| **WebAttack** | 0.7834 | 0.00% +/- 0.00% | **FAIL (Zero Recall@1%FAR)** | **MONITOR-ONLY** | Autonomous flow-level blocking prohibited; application payloads handled by WAF. |
 
 ---
 

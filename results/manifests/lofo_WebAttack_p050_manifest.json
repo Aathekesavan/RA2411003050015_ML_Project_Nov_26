@@ -5,7 +5,7 @@
   "actual_prevalence": 0.05,
   "subsampled_side": "benign",
   "is_low_power": false,
-  "random_seed": 42,
+  "random_seed": 404,
   "scaler_path": "results\\models\\scaler_lofo_WebAttack.joblib",
   "split_row_counts": {
     "train": 37580,
@@ -33,9 +33,9 @@
     }
   },
   "split_sha256_checksums": {
-    "train": "b1aba4e29900822297cd5541f8d417941176668b8531ab08de491aa45fcfe476",
-    "val": "5dccd31e6e56f43afefb5726052c63d2f81998992d7862127f47d30c21a4afe5",
-    "test": "8e0990a375b5b1af21bbfeeb579380a88fcd0f3467ff99c4dfd1cf14c8fbbac6"
+    "train": "1a883128e98bac63b9b1e82e15c3e1b2917a96d67e33ef67a47a7e59734729b6",
+    "val": "c4619295d13e8c82e39e310eea2ff8f89db0194823123887d7d69e3d19dd6b46",
+    "test": "1f490302e04814bfd506e9465ec35910e59a386c05592503f52251d65e7055c3"
   },
   "multi_seed_runs": []
 }

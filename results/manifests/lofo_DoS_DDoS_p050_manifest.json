@@ -5,7 +5,7 @@
   "actual_prevalence": 0.049999,
   "subsampled_side": "attack",
   "is_low_power": false,
-  "random_seed": 42,
+  "random_seed": 404,
   "scaler_path": "results\\models\\scaler_lofo_DoS_DDoS.joblib",
   "split_row_counts": {
     "train": 34258,
@@ -33,9 +33,9 @@
     }
   },
   "split_sha256_checksums": {
-    "train": "e4affa2a0aaf8eff5d53ad79577be7838750aa2e53c828c46f499075c8627b52",
-    "val": "c1f81c043aeaa3ad33890857c545130eb2aef1ce850706d6eb97b656b020d5de",
-    "test": "1a99342b279788b9507a6fc849e0977583fc149fc273ff68db5bc4e4928571d5"
+    "train": "2ff5eb41d36d77cca4484bf672910c0db005e16cfdc26b13c220fad309a4b7d1",
+    "val": "9ac657ddaddaf861e081135909326fb0236c58cbad1bea5a28ad498fce02d4a7",
+    "test": "5713c02c831afc896da9695fb32789b734ba1814a6fe5d9d1352dab9d54f31d1"
   },
   "multi_seed_runs": []
 }

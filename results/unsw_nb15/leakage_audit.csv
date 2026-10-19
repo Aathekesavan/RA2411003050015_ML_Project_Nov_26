@@ -1,6 +1,6 @@
-Family_Group,Rand_Test_Pos,Rand_Near_Matches_3dec,Rand_Near_Leakage_3dec_Pct,Rand_Log1p_Leakage_3dec_Pct,Rand_Median_NN_Dist,Rand_Pct_Within_Eps,LOFO_Test_Pos,LOFO_Near_Matches_3dec,LOFO_Near_Leakage_3dec_Pct,LOFO_Log1p_Leakage_3dec_Pct,LOFO_Median_NN_Dist,LOFO_Pct_Within_Eps,Epsilon
-Recon_Analysis,876,6,0.68,0.68,0.2052,0.68,3007,25,0.83,0.7,0.2456,0.7,0.0011
-Exploit_Payload,2971,27,0.91,0.1,0.3438,0.07,9795,25,0.26,0.13,0.4588,0.06,0.0011
-Fuzzers,1542,8,0.52,0.78,0.2998,0.45,5241,18,0.34,0.19,0.3378,0.06,0.0011
-DoS,1191,18,1.51,0.25,0.3158,0.17,4023,35,0.87,0.52,0.3614,0.3,0.0011
-Generic,833,4,0.48,0.84,0.1453,0.0,2822,9,0.32,0.28,1.4738,0.04,0.0011
+Family_Group,Rand_Test_Pos,Rand_Near_Matches_3dec,Rand_Near_Leakage_3dec_Pct,Rand_Log1p_Leakage_3dec_Pct,Rand_NN_p5,Rand_NN_p25,Rand_NN_median,LOFO_Test_Pos,LOFO_Near_Matches_3dec,LOFO_Near_Leakage_3dec_Pct,LOFO_Log1p_Leakage_3dec_Pct,LOFO_NN_p5,LOFO_NN_p25,LOFO_NN_median,Benign_NN_p5,Benign_NN_p25,Benign_NN_median,Epsilon,Epsilon_Status
+Recon_Analysis,902,11,1.22,0.89,0.0394,0.1251,0.2026,3007,25,0.83,0.7,0.0855,0.175,0.2456,0.0011,0.0275,0.1112,0.0011,Degenerate (< 0.03)
+Exploit_Payload,2938,20,0.68,0.17,0.0523,0.2161,0.35,9795,25,0.26,0.13,0.0807,0.2673,0.4588,0.0011,0.0275,0.1112,0.0011,Degenerate (< 0.03)
+Fuzzers,1572,7,0.45,0.45,0.0395,0.2034,0.3011,5241,18,0.34,0.19,0.0505,0.2179,0.3378,0.0011,0.0275,0.1112,0.0011,Degenerate (< 0.03)
+DoS,1207,16,1.33,0.66,0.0463,0.1887,0.3218,4023,35,0.87,0.52,0.0606,0.2229,0.3614,0.0011,0.0275,0.1112,0.0011,Degenerate (< 0.03)
+Generic,847,6,0.71,1.18,0.0271,0.0656,0.1449,2822,9,0.32,0.28,0.0598,0.571,1.4738,0.0011,0.0275,0.1112,0.0011,Degenerate (< 0.03)
