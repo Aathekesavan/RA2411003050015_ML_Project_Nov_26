@@ -1,6 +1,12 @@
+<div align="center">
+
+<img src="docs/srm_trc_logo.jpg" alt="SRM Institute of Science and Technology, Tiruchirappalli" width="480" />
+
 # SentinelX-Shift: Operational Network Intrusion Detection & Prioritized Alert Review System
 
 > **Combining Behavioral Netflow Models, Autoencoder-Anchored Scoring, and Independent Web/WAF Telemetry Confirmation**
+
+</div>
 
 ---
 
