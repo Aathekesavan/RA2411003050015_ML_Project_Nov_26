@@ -156,8 +156,6 @@ python -m pytest tests/
 ```
 
 ---
-12345678
-
 ## 📝 6. License & Academic Integrity
 
 This project is developed as part of the academic curriculum for the **B.Tech Computer Science and Engineering** program at **SRM Institute of Science and Technology, Tiruchirappalli Campus**.
