@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelX Shift | Mode 2 &middot; Local Replica Active Scenario</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+  <style>
+    /* Mode 2 Active-Scenario Console Layout */
+    :root {
+      --pres-bg: #090e17;
+      --pres-panel-bg: #0f172a;
+      --pres-panel-border: #1e293b;
+      --pres-panel-header: #131d31;
+      --pres-card-bg: #111a2c;
+      --pres-card-border: #1e2e46;
+      --pres-accent-blue: #2563eb;
+      --pres-accent-cyan: #0284c7;
+      --pres-green: #15803d;
+      --pres-amber: #b45309;
+      --pres-red: #b91c1c;
+      --pres-red-light: #ef4444;
+      --pres-text-bright: #f8fafc;
+      --pres-text-secondary: #cbd5e1;
+      --pres-text-muted: #94a3b8;
+      /* Northstar Collegiate Tokens */
+      --ns-navy: #0f1f38;
+      --ns-blue-primary: #1d4ed8;
+      --ns-slate-bg: #f8fafc;
+      --ns-card-white: #ffffff;
+      --ns-border: #e2e8f0;
+      --ns-text-dark: #0f172a;
+      --ns-text-muted: #475569;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--pres-bg);
+      color: var(--pres-text-bright);
+      font-family: var(--font-stack);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Masthead */
+    .pres-header {
+      background: #070b12;
+      border-bottom: 1px solid var(--pres-panel-border);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      min-height: 52px;
+    }
+    .pres-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pres-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pres-brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
+    }
+    .pres-brand-sub {
+      color: var(--pres-text-muted);
+      font-size: 0.8rem;
+      border-left: 1px solid #334155;
+      padding-left: 10px;
+      margin-left: 2px;
+    }
+    .badge-mode2-pill {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid #a855f7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-synthetic-demo {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .pres-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Controls Bar & Replica Identity */
+    .pres-controls-bar {
+      background: #0d1524;
+      border-bottom: 1px solid var(--pres-panel-border);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .replica-identity-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .replica-portal-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .replica-online-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #14532d;
+      color: #bbf7d0;
+      border: 1px solid #166534;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #22c55e;
+    }
+    .controls-action-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .scenario-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scenario-select-label {
+      font-size: 0.8rem;
+      color: var(--pres-text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .scenario-selector-wrap select {
+      background: #070b14;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+    .scenario-selector-wrap select:focus-visible {
+      border-color: #38bdf8;
+      outline: 2px solid rgba(56, 189, 248, 0.3);
+    }
+    .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pres-btn {
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pres-btn:focus-visible {
+      outline: 2px solid #38bdf8;
+      outline-offset: 2px;
+    }
+    .pres-btn-start {
+      background: #15803d;
+      color: #ffffff;
+      border-color: #166534;
+    }
+    .pres-btn-start:hover {
+      background: #166534;
+    }
+    .pres-btn-pause {
+      background: #b45309;
+      color: #ffffff;
+      border-color: #92400e;
+    }
+    .pres-btn-pause:hover {
+      background: #92400e;
+    }
+    .pres-btn-reset {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-color: #334155;
+    }
+    .pres-btn-reset:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+    .pres-btn-nav {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+    }
+    .pres-btn-nav:hover {
+      background: #1e293b;
+      color: #f8fafc;
+      border-color: #475569;
+    }
+
+    /* Secondary Incident Row */
+    .incident-telemetry-row {
+      background: #10192a;
+      border-bottom: 1px solid var(--pres-panel-border);
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.8rem;
+    }
+    .incident-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .incident-label {
+      color: var(--pres-text-muted);
+      font-weight: 500;
+    }
+    .incident-val {
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+    .badge-simulated-attack {
+      background: #7f1d1d;
+      color: #fecaca;
+      border: 1px solid #991b1b;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .pill-sim-scenario {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      border: 1px solid #1e293b;
+    }
+    .pill-route {
+      background: #0f172a;
+      color: #93c5fd;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      border: 1px solid #1e293b;
+    }
+    .incident-time {
+      font-family: var(--font-mono);
+      color: #cbd5e1;
+    }
+
+    /* Three-Step Progress Display */
+    .three-step-progress-container {
+      background: #0d1524;
+      border-bottom: 1px solid var(--pres-panel-border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .progress-step-card {
+      background: #111a2c;
+      border: 1px solid #1e2e46;
+      border-radius: 6px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px;
+      transition: all 0.2s ease;
+    }
+    .progress-step-card.active-step {
+      border-color: #ef4444;
+      background: #191c2c;
+      box-shadow: 0 0 0 1px #dc2626;
+    }
+    .progress-step-card.success-step {
+      border-color: #0284c7;
+      background: #0d2138;
+      box-shadow: 0 0 0 1px #0284c7;
+    }
+    .step-card-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .progress-step-card.active-step .step-card-num {
+      background: #dc2626;
+      color: #ffffff;
+    }
+    .progress-step-card.success-step .step-card-num {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .step-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .step-card-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .step-card-status {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .progress-step-card.active-step .step-card-status {
+      color: #fca5a5;
+    }
+    .progress-step-card.success-step .step-card-status {
+      color: #7dd3fc;
+    }
+    .step-arrow-connector {
+      color: #334155;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Main Stage Viewport */
+    .replica-stage-viewport {
+      padding: 16px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .browser-mock {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 480px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    .browser-bar {
+      background: #0f172a;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .browser-url {
+      flex: 1;
+      background: #1e293b;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+    }
+    .browser-content {
+      background: var(--ns-slate-bg);
+      color: var(--ns-text-dark);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      position: relative;
+    }
+    .ns-portal-bar {
+      background: var(--ns-navy);
+      color: #ffffff;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1e2e4a;
+    }
+    .ns-portal-brand {
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ns-portal-brand span {
+      font-size: 0.76rem;
+      font-weight: normal;
+      color: #94a3b8;
+      text-transform: none;
+    }
+    .ns-portal-user {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+    .ns-viewport-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    /* Floating Centered Status Card (Subtle translucent backdrop so replica is visible & readable!) */
+    .centered-status-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(11, 18, 32, 0.72);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 16px 48px 16px;
+      z-index: 50;
+      overflow-y: auto;
+      animation: fadeIn 0.15s ease-out;
+      box-sizing: border-box;
+    }
+    .centered-status-card {
+      background: #0f172a;
+      border: 2px solid #dc2626;
+      border-radius: 8px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
+      padding: 16px 20px;
+      max-width: 490px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      margin: 10px auto;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .status-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 10px;
+    }
+    .status-card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-card-close-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      border-radius: 4px;
+      width: 28px;
+      height: 28px;
+      font-size: 1.2rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .status-card-close-btn:hover {
+      background: #334155;
+      color: #ffffff;
+      border-color: #64748b;
+    }
+    .status-card-heading {
+      color: #ef4444;
+      font-size: 1.18rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .status-badge-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge-block-active-red {
+      background: #7f1d1d;
+      color: #fecaca;
+      border: 1px solid #b91c1c;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .badge-replica-enforced {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-allowlisted-card {
+      background: #0c4a6e;
+      color: #7dd3fc;
+      border: 1px solid #0284c7;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .centered-status-card.status-card-allowed {
+      border-color: #0284c7;
+    }
+    .centered-status-card.status-card-allowed .status-card-heading {
+      color: #38bdf8;
+    }
+    .result-card-details-box {
+      width: 100%;
+      background: #070b14;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      box-sizing: border-box;
+    }
+    .result-detail-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 10px;
+      align-items: baseline;
+    }
+    @media (max-width: 500px) {
+      .result-detail-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+    }
+    .result-detail-label {
+      color: #94a3b8;
+      font-weight: 700;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .result-detail-val {
+      color: #f1f5f9;
+      font-weight: 500;
+    }
+    .result-privacy-note {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 4px;
+      padding: 8px 10px;
+      color: #7dd3fc;
+      font-size: 0.73rem;
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+    .status-card-reason {
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      margin: 2px 0 0;
+      max-width: 420px;
+    }
+    .status-expiry-box {
+      width: 100%;
+      background: #070b14;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .expiry-timer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .expiry-label {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .expiry-countdown {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fbbf24;
+    }
+    .ttl-progress-track {
+      background: #1e293b;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .ttl-progress-fill {
+      background: #ef4444;
+      height: 100%;
+      transition: width 1s linear;
+    }
+    .expiry-auto-return-note {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      line-height: 1.35;
+      margin: 0;
+    }
+    .status-card-footer {
+      border-top: 1px solid #1e293b;
+      padding-top: 8px;
+      width: 100%;
+    }
+    .enforcement-mech-note {
+      font-size: 0.7rem;
+      color: #64748b;
+      font-family: var(--font-mono);
+    }
+
+    /* Expandable Technical Details Section */
+    .tech-details-accordion {
+      margin: 0 24px 24px 24px;
+      background: #0d1524;
+      border: 1px solid var(--pres-panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .tech-details-summary {
+      padding: 12px 20px;
+      background: #111a2c;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      transition: background 0.15s;
+    }
+    .tech-details-summary:hover {
+      background: #152238;
+    }
+    .tech-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tech-summary-toggle {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      background: #0f172a;
+      border: 1px solid #334155;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .tech-details-body {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-top: 1px solid var(--pres-panel-border);
+    }
+    .tech-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 950px) {
+      .tech-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .tech-card {
+      background: #0f172a;
+      border: 1px solid #1e2e46;
+      border-radius: 6px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tech-card-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin: 0;
+      border-bottom: 1px solid #1e2e46;
+      padding-bottom: 6px;
+    }
+    .inspection-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .inspection-stage {
+      background: #111a2c;
+      border: 1px solid #1d2c44;
+      border-radius: 4px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stage-title {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .tech-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 10px;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+    }
+    .evidence-list-box {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .policy-rule-row {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-top: 1px solid #1e2c44;
+      padding-top: 6px;
+      margin-top: 4px;
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 700px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+    .comparison-card {
+      background: #111a2c;
+      border-radius: 4px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .comparison-card-protected {
+      border: 1px solid #166534;
+      border-top: 3px solid #15803d;
+    }
+    .comparison-card-counterfactual {
+      border: 1px solid #991b1b;
+      border-top: 3px solid #b91c1c;
+    }
+    .comparison-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .comparison-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .badge-ready {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+    .badge-hypothetical {
+      background: #7f1d1d;
+      color: #fecaca;
+      border: 1px solid #991b1b;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+    .comp-guidance-box {
+      font-size: 0.72rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Clear SentinelX Header and Mode 2 · Local Replica Label -->
+  <header class="pres-header">
+    <div class="pres-header-left">
+      <div class="pres-brand">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span class="pres-brand-title">SentinelX Shift</span>
+        <span class="pres-brand-sub">Autonomous Threat Defense</span>
+      </div>
+      <span class="badge-mode2-pill">Mode 2 &middot; Local Replica</span>
+      <span class="badge-synthetic-demo">Local Replica &middot; Synthetic Demo Data</span>
+    </div>
+    <div class="pres-header-right">
+      <a href="/dashboard/" class="pres-btn pres-btn-nav" title="Return to SOC Analyst Review Queue">
+        View Alert Details
+      </a>
+      <a href="/replica" target="_blank" class="pres-btn pres-btn-nav" title="Open Full Standalone Replica Portal in New Tab">
+        Open Full Replica
+      </a>
+    </div>
+  </header>
+
+  <!-- 2. Replica Name & Controls Bar -->
+  <div class="pres-controls-bar">
+    <div class="replica-identity-group">
+      <span class="replica-portal-name">Northstar Campus Portal</span>
+      <span class="replica-online-indicator">
+        <span class="pulse-dot"></span> ONLINE
+      </span>
+    </div>
+    
+    <div class="controls-action-group">
+      <div class="scenario-selector-wrap">
+        <label for="select-scenario" class="scenario-select-label">Scenario:</label>
+        <select id="select-scenario">
+          <option value="bruteforce">Brute force &mdash; /replica/login</option>
+          <option value="honeypot">Honeypot probe &mdash; /replica/admin-decoy</option>
+          <option value="benign_burst">Benign burst &mdash; /replica/portal</option>
+        </select>
+      </div>
+      <div class="btn-group">
+        <button id="btn-start" class="pres-btn pres-btn-start">
+          Run Scenario
+        </button>
+        <button id="btn-pause" class="pres-btn pres-btn-pause">
+          Pause
+        </button>
+        <button id="btn-reset" class="pres-btn pres-btn-reset" title="Reset scenario test blocks (Preserves analyst review database)">
+          Reset
+        </button>
+        <a href="/dashboard/" class="pres-btn pres-btn-nav" title="View correlated alert in analyst review queue">
+          View Alert Details
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Secondary Incident Row -->
+  <div class="incident-telemetry-row">
+    <div class="incident-item">
+      <span class="badge-simulated-attack">SIMULATED ATTACK</span>
+      <span class="incident-label">Target Site:</span>
+      <strong id="loc-site" class="incident-val">Northstar Campus Portal (Lab Replica)</strong>
+    </div>
+    <div class="incident-item">
+      <span class="incident-label">Source IP:</span>
+      <code id="loc-ip" class="pill-sim-scenario">198.51.100.77</code>
+    </div>
+    <div class="incident-item">
+      <span class="incident-label">Target Route:</span>
+      <code id="loc-route" class="pill-route">/replica/login</code>
+    </div>
+    <div class="incident-item">
+      <span class="incident-label">Timestamp:</span>
+      <span id="loc-time" class="incident-time">--</span>
+    </div>
+  </div>
+
+  <!-- 4. Three-Step Progress Display: Attack detected → Evidence confirmed → Temporary block active -->
+  <div class="three-step-progress-container">
+    <div class="progress-step-card" id="step-detect-card">
+      <div class="step-card-num" id="step-num-1">1</div>
+      <div class="step-card-content">
+        <span class="step-card-title" id="stage1-title">Attack detected</span>
+        <span class="step-card-status" id="stage1-status">PENDING</span>
+      </div>
+    </div>
+    
+    <div class="step-arrow-connector">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+
+    <div class="progress-step-card" id="step-evidence-card">
+      <div class="step-card-num" id="step-num-2">2</div>
+      <div class="step-card-content">
+        <span class="step-card-title" id="stage2-title">Evidence confirmed</span>
+        <span class="step-card-status" id="stage2-status">PENDING</span>
+      </div>
+    </div>
+
+    <div class="step-arrow-connector">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+
+    <div class="progress-step-card" id="step-block-card">
+      <div class="step-card-num" id="step-num-3">3</div>
+      <div class="step-card-content">
+        <span class="step-card-title" id="stage3-title">Temporary block active</span>
+        <span class="step-card-status" id="stage3-status">PENDING</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Main Stage: Replica Browser Viewport with Centered Status Card -->
+  <div class="replica-stage-viewport">
+    <div class="browser-mock">
+      <!-- Browser Top Bar -->
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <span class="browser-dot dot-red"></span>
+          <span class="browser-dot dot-yellow"></span>
+          <span class="browser-dot dot-green"></span>
+        </div>
+        <div class="browser-url" id="browser-url-bar">https://portal.northstar.edu/replica/login</div>
+      </div>
+
+      <!-- Browser Content (Northstar Campus Portal is visible & readable behind the centered status card!) -->
+      <div class="browser-content" id="browser-viewport">
+        <!-- Portal Top Header -->
+        <div class="ns-portal-bar">
+          <div class="ns-portal-brand">
+            Northstar University <span>| Campus Portal</span>
+          </div>
+          <div class="ns-portal-user" id="vp-user-badge">
+            Elena Vance (#NS-88412)
+          </div>
+        </div>
+
+        <!-- Dynamic Viewport Body (Student info, SSO form, Decoy gateway) -->
+        <div class="ns-viewport-body" id="replica-view-content">
+          <!-- Rendered dynamically by presentation.js -->
+        </div>
+
+        <!-- 6 & 7. Centered Status Card (Subtle translucent backdrop so replica is visible & readable!) -->
+        <div id="interception-overlay" class="centered-status-backdrop" style="display: none;">
+          <div class="centered-status-card" id="mode2-status-card">
+            <div class="status-card-header">
+              <div class="status-card-title-group">
+                <span id="status-card-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                </span>
+                <h3 class="status-card-heading" id="status-card-heading">Attack blocked &mdash; HTTP 403</h3>
+              </div>
+              <button id="btn-top-dismiss-overlay" class="status-card-close-btn" title="Dismiss overlay" aria-label="Dismiss">&times;</button>
+            </div>
+            
+            <div class="status-badge-row">
+              <span id="status-card-badge" class="badge-block-active-red">BLOCK ACTIVE</span>
+              <span class="badge-replica-enforced">LOCAL REPLICA &middot; SYNTHETIC DEMO</span>
+            </div>
+
+            <!-- Structured Result Details: Attack type, What happened, Evidence, Response, Privacy note -->
+            <div class="result-card-details-box" id="result-card-details">
+              <div class="result-detail-row">
+                <span class="result-detail-label">Attack Type:</span>
+                <span class="result-detail-val" id="res-attack-type">Slow-Rate Credential Spray (BruteForce)</span>
+              </div>
+              <div class="result-detail-row">
+                <span class="result-detail-label">What Happened:</span>
+                <span class="result-detail-val" id="res-what-happened">Repeated failed logins exceeded authentication threshold on /replica/login.</span>
+              </div>
+              <div class="result-detail-row">
+                <span class="result-detail-label">Evidence:</span>
+                <span class="result-detail-val" id="res-evidence">auth_failures: CONFIRMED (7 failures &ge; 5)</span>
+              </div>
+              <div class="result-detail-row">
+                <span class="result-detail-label">How Responded:</span>
+                <span class="result-detail-val" id="res-response">Temporarily blocked simulated source in local replica for 15s. Subsequent requests receive HTTP 403.</span>
+              </div>
+              <div id="res-honeypot-event-box" style="display: none; width: 100%; background: #070b14; border: 1px solid #1e293b; border-radius: 4px; padding: 8px 10px; font-size: 0.72rem; color: #cbd5e1; text-align: left; box-sizing: border-box; margin-top: 4px;">
+                <div style="font-weight: 700; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.04em;">Recorded Decoy Telemetry (Metadata Only)</div>
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; font-family: var(--font-mono); font-size: 0.7rem;">
+                  <span style="color: #64748b;">Event ID:</span> <span id="res-honey-id" style="color: #38bdf8;">--</span>
+                  <span style="color: #64748b;">Decoy Route:</span> <span id="res-honey-route" style="color: #f1f5f9;">/replica/admin-decoy</span>
+                  <span style="color: #64748b;">HTTP Method:</span> <span id="res-honey-method" style="color: #f1f5f9;">POST</span>
+                  <span style="color: #64748b;">Source Identity:</span> <span id="res-honey-src" style="color: #f1f5f9;">198.51.100.88</span>
+                  <span style="color: #64748b;">Captured At:</span> <span id="res-honey-ts" style="color: #f1f5f9;">--</span>
+                </div>
+              </div>
+              <div id="res-honeypot-privacy" class="result-privacy-note" style="display: none;">
+                <strong>Decoy Privacy Safeguard:</strong> The decoy records security event metadata only (source IP, timestamp, HTTP method, route). It does not save or store submitted passwords, credentials, or request bodies.
+              </div>
+            </div>
+
+            <!-- Expiry Timer with Progress Bar (active when block is enforced) -->
+            <div class="status-expiry-box" id="status-expiry-box">
+              <div class="expiry-timer-row">
+                <span class="expiry-label">Block expires in:</span>
+                <span class="expiry-countdown"><span id="interception-ttl">15</span>s</span>
+              </div>
+              <div class="ttl-progress-track">
+                <div id="ttl-progress-fill" class="ttl-progress-fill" style="width: 100%;"></div>
+              </div>
+              <p class="expiry-auto-return-note">
+                Access returns automatically when the timer ends or when Reset is pressed.
+              </p>
+            </div>
+
+            <div class="status-card-footer">
+              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 12px;">
+                <span class="enforcement-mech-note" id="res-enforcement-mech">Enforced in-process by LocalReplicaAdapter</span>
+                <button id="btn-dismiss-overlay" class="pres-btn" style="padding: 6px 16px; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: #334155; border: 1px solid #475569; color: #ffffff; border-radius: 4px;">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Expandable Technical Details Section -->
+  <details class="tech-details-accordion" id="tech-details-accordion">
+    <summary class="tech-details-summary">
+      <div class="tech-summary-left">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+        <span>Technical Details &amp; Multimodal Inspection</span>
+      </div>
+      <span class="tech-summary-toggle">Click to expand details</span>
+    </summary>
+    
+    <div class="tech-details-body">
+      <div class="tech-details-grid">
+        
+        <!-- Left Column: Inspection Stages Telemetry -->
+        <div class="tech-card">
+          <h4 class="tech-card-title">SentinelX Inspection Stream &amp; Evidence</h4>
+          <div class="inspection-stream">
+            <div class="inspection-stage">
+              <div class="stage-header">
+                <span class="stage-title">Flow Ingestion &amp; Telemetry</span>
+                <span id="decision-status-badge" class="badge badge-low" style="background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 2px 7px; border-radius: 3px; font-size: 0.7rem; font-weight: 600;">READY</span>
+              </div>
+              <div class="tech-stat-grid">
+                <div>Packets/s: <strong id="val-pps" style="font-family: var(--font-mono);">--</strong></div>
+                <div>Bytes/s: <strong id="val-bps" style="font-family: var(--font-mono);">--</strong></div>
+                <div>Duration: <strong id="val-dur" style="font-family: var(--font-mono);">--</strong></div>
+                <div>Source IP: <strong id="val-src-ip" style="font-family: var(--font-mono);">--</strong></div>
+              </div>
+            </div>
+
+            <div class="inspection-stage">
+              <div class="stage-header">
+                <span class="stage-title">AI Model Fusion (Gated Boost)</span>
+                <span class="badge badge-outline" style="border: 1px solid #334155; color: #94a3b8; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem;">SCORED</span>
+              </div>
+              <div class="tech-stat-grid">
+                <div>Gated Score: <strong id="val-prod-score" style="font-family: var(--font-mono); color: #f8fafc;">--</strong></div>
+                <div>Suspected Family: <strong id="val-family" style="color: #38bdf8;">--</strong></div>
+                <div>Activation Threshold: <strong id="val-activation" style="color: #10b981;">&tau;* = 0.56</strong></div>
+              </div>
+            </div>
+
+            <div class="inspection-stage">
+              <div class="stage-header">
+                <span class="stage-title">Correlated Evidence</span>
+                <span class="badge badge-outline" style="border: 1px solid #334155; color: #94a3b8; padding: 1px 6px; border-radius: 3px; font-size: 0.68rem;">VERIFIED</span>
+              </div>
+              <div id="val-evidence-list" class="evidence-list-box">
+                <span style="color: #64748b;">Awaiting scenario execution...</span>
+              </div>
+              <div class="policy-rule-row">
+                <div>Policy Rule: <code id="val-policy-rule" style="color: #38bdf8; font-family: var(--font-mono);">--</code></div>
+                <div>Decision Action: <strong id="val-action">--</strong></div>
+                <div id="stage4-status" style="display: none;">PENDING</div>
+                <div>Reason: <span id="val-reason" style="color: #94a3b8;">--</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Protected vs Without SentinelX Comparison -->
+        <div class="tech-card">
+          <h4 class="tech-card-title">Defensive Comparison: Protected vs. Without SentinelX</h4>
+          <div class="comparison-grid">
+            <!-- Protected Card -->
+            <div class="comparison-card comparison-card-protected">
+              <div class="comparison-title-row">
+                <span class="comparison-title" style="color: #22c55e;">Protected by SentinelX</span>
+                <span id="comp-prot-badge" class="badge-ready">READY — no block active</span>
+              </div>
+              <div style="font-size: 0.8rem; color: #f1f5f9;">
+                <strong>Replica State:</strong> <code id="comp-prot-status" style="font-family: var(--font-mono);">HTTP 200 OK (No Block Active)</code>
+              </div>
+              <div style="font-size: 0.76rem; color: #cbd5e1;">
+                <strong>Mechanism:</strong> <span id="comp-prot-mech">In-process interceptor (LocalReplicaAdapter)</span>
+              </div>
+              <div style="font-size: 0.76rem; color: #94a3b8;">
+                <strong>Outcome:</strong> <span id="comp-prot-impact">Baseline state: No active block. Run the scenario to simulate the attack.</span>
+              </div>
+              <div id="comp-prot-guidance" class="comp-guidance-box">
+                Click Run Scenario above to trigger detection and activate a block.
+              </div>
+            </div>
+
+            <!-- Counterfactual Card -->
+            <div class="comparison-card comparison-card-counterfactual">
+              <div class="comparison-title-row">
+                <span class="comparison-title" style="color: #ef4444;">Without SentinelX (Hypothetical)</span>
+                <span class="badge-hypothetical">HYPOTHETICAL OUTCOME</span>
+              </div>
+              <div style="font-size: 0.8rem; color: #f1f5f9;">
+                <strong>Simulated Status:</strong> <code id="comp-hypo-status" style="font-family: var(--font-mono);">HTTP 200 OK (Compromised)</code>
+              </div>
+              <div style="font-size: 0.76rem; color: #cbd5e1;">
+                <strong>Hypothetical Access:</strong> <span id="comp-hypo-page">Simulated unauthorized access to fake administrative route</span>
+              </div>
+              <div style="font-size: 0.76rem; color: #ef4444;">
+                <strong>Simulated Impact:</strong> <span id="comp-hypo-impact">Credential guessed; unauthorized admin access granted.</span>
+              </div>
+              <small style="font-size: 0.68rem; color: #64748b; font-style: italic;">
+                * Non-mutating simulation with synthetic fake data. No real enforcement disabled.
+              </small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </details>
+
+  <script src="/dashboard/presentation.js"></script>
+</body>
+</html>

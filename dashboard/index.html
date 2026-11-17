@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelX-Shift | Analyst Defense Console &amp; Review Queue</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Operational Posture Banner -->
+  <header class="top-banner">
+    <div class="banner-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="banner-title">OPERATIONAL POSTURE: <strong>MONITOR-ONLY</strong></span>
+      <span class="banner-sub">(Autonomous inline blocking is disabled by default. All triage decisions require analyst confirmation or authorized evidence.)</span>
+    </div>
+    <div class="system-status" id="system-status-badge">
+      <span class="pulse-dot"></span> System Active: <span id="model-name-display">Loading...</span>
+    </div>
+  </header>
+
+  <!-- Navigation / Subheader -->
+  <nav class="sub-nav">
+    <div class="nav-brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      <h1>SentinelX <span>Shift</span></h1>
+      <span class="badge badge-outline">Production Guard v2.0</span>
+    </div>
+    <div class="nav-metrics-pills">
+      <a href="/presentation" class="nav-link-btn nav-link-presentation" title="Open Mode 2 Active-Scenario Console with Counterfactual Defense Comparison">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Mode 2 Active Scenario View
+      </a>
+      <a href="/replica" target="_blank" class="nav-link-btn" title="Open Local Replica Campus Portal in New Tab">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Open Replica Portal
+      </a>
+      <button id="btn-refresh" class="nav-link-btn" title="Refresh queue alerts and enforcement status">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh Queue
+      </button>
+    </div>
+  </nav>
+
+  <main class="dashboard-container">
+
+    <!-- 5-STEP WORKFLOW GUIDE TRACK -->
+    <div class="workflow-guide-bar">
+      <div class="workflow-steps">
+        <a href="#step-1" class="workflow-step active" id="wf-step-1">
+          <span class="step-num">1</span>
+          <div class="step-meta">
+            <span class="step-label">Choose Mode</span>
+            <span class="step-sub">Select environment</span>
+          </div>
+        </a>
+        <div class="workflow-step-connector"></div>
+        <a href="#step-2" class="workflow-step" id="wf-step-2">
+          <span class="step-num">2</span>
+          <div class="step-meta">
+            <span class="step-label">Run Scenario</span>
+            <span class="step-sub">Trigger or ingest</span>
+          </div>
+        </a>
+        <div class="workflow-step-connector"></div>
+        <a href="#step-3" class="workflow-step" id="wf-step-3">
+          <span class="step-num">3</span>
+          <div class="step-meta">
+            <span class="step-label">Review Alert</span>
+            <span class="step-sub">Triage evidence</span>
+          </div>
+        </a>
+        <div class="workflow-step-connector"></div>
+        <a href="#step-4" class="workflow-step" id="wf-step-4">
+          <span class="step-num">4</span>
+          <div class="step-meta">
+            <span class="step-label">See Outcome</span>
+            <span class="step-sub">Inspect defense</span>
+          </div>
+        </a>
+        <div class="workflow-step-connector"></div>
+        <a href="#step-5" class="workflow-step" id="wf-step-5">
+          <span class="step-num">5</span>
+          <div class="step-meta">
+            <span class="step-label">Reset</span>
+            <span class="step-sub">Clean state</span>
+          </div>
+        </a>
+      </div>
+      <div class="workflow-next-hint" id="workflow-next-hint">
+        <strong>Demo Walkthrough:</strong> Follow Steps 1 through 5 to demonstrate SentinelX detection, evidence correlation, and safe ephemeral defense.
+      </div>
+    </div>
+
+    <!-- Live Inline Notification Banner -->
+    <div id="scenario-status-banner" class="status-banner" style="display: none;">
+      <div class="status-banner-content">
+        <span id="scenario-status-icon" class="status-banner-icon"></span>
+        <div id="scenario-status-text" class="status-banner-text">Ready</div>
+      </div>
+      <button id="scenario-status-close" class="status-banner-close" onclick="closeStatusBanner()">&times;</button>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- STEP 1: CHOOSE OPERATING MODE                            -->
+    <!-- ======================================================== -->
+    <section class="workflow-section" id="step-1">
+      <div class="workflow-section-header">
+        <div class="workflow-header-left">
+          <span class="section-step-pill">Step 1</span>
+          <div>
+            <h2 class="workflow-section-title">Choose Operating Mode &amp; Safety Controls</h2>
+            <p class="workflow-section-desc">Select between passive real-site monitoring or safe replica defense in the local lab.</p>
+          </div>
+        </div>
+        <span id="current-mode-badge" class="status-badge-simulated">MODE 1: REAL-SITE MONITORING (SIMULATED / NOT CONNECTED)</span>
+      </div>
+
+      <!-- Mode Cards Grid -->
+      <div class="mode-cards-grid">
+        <!-- Mode 1 Card -->
+        <div class="mode-card" id="mode-card-1">
+          <div class="mode-card-header">
+            <div class="mode-card-title-group">
+              <span class="mode-badge-pill mode-badge-m1">Passive Observer</span>
+              <h3 class="mode-card-title">Mode 1: Real-Site Monitoring</h3>
+            </div>
+            <span class="badge-mode-simulated">SIMULATED / NOT CONNECTED</span>
+          </div>
+          <p class="mode-card-body">
+            Passive netflow observation against configured production site <code>prod-portal-alpha</code>. Uses <code>MockRealSiteAdapter</code> with <strong>zero real network or firewall side-effects</strong>.
+          </p>
+          <div class="mode-card-footer">
+            <button id="tab-mode-1" class="mode-tab-btn active-mode-1">Select Mode 1</button>
+          </div>
+        </div>
+
+        <!-- Mode 2 Card -->
+        <div class="mode-card" id="mode-card-2">
+          <div class="mode-card-header">
+            <div class="mode-card-title-group">
+              <span class="mode-badge-pill mode-badge-m2">Active Defense Lab</span>
+              <h3 class="mode-card-title">Mode 2: Replica Defense (Local Lab)</h3>
+            </div>
+            <span class="badge-mode-replica">LOCAL REPLICA LAB</span>
+          </div>
+          <p class="mode-card-body">
+            Active defense simulation connected directly to the isolated Northstar Campus Portal at <a href="/replica" target="_blank" style="color: #60a5fa; text-decoration: underline;"><code>/replica</code></a>. Uses <code>LocalReplicaAdapter</code> for safe ephemeral in-process blocks.
+          </p>
+          <div class="mode-card-footer">
+            <button id="tab-mode-2" class="mode-tab-btn">Select Mode 2</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-banner-info" id="mode-banner-info">
+        <strong>Current Environment:</strong> Operating in Mode 1. Model scores alone cannot block; independent attack evidence and per-site authorization are strictly mandatory.
+      </div>
+
+      <!-- Master Enforcement Controls Strip -->
+      <div class="master-safety-bar">
+        <div class="safety-control-group">
+          <span class="safety-label">Autonomous Blocking Policy:</span>
+          <button id="btn-toggle-global-blocking" class="btn-toggle-blocking" title="Enable or disable global blocking backend policy">
+            Global Blocking: <span id="global-blocking-status-text">OFF</span>
+          </button>
+        </div>
+        <div class="safety-control-group">
+          <span class="safety-label">Emergency Circuit Breaker:</span>
+          <button id="btn-emergency-stop" class="btn-emergency-stop" title="Emergency Stop: instantly disables all blocking across all adapters">
+            EMERGENCY STOP
+          </button>
+        </div>
+        <div class="safety-control-group">
+          <span class="safety-label">Active Ephemeral Blocks:</span>
+          <span class="param-pill"><strong id="val-active-blocks-count">0</strong> in memory</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STEP 2: RUN OR INGEST A SCENARIO                         -->
+    <!-- ======================================================== -->
+    <section class="workflow-section" id="step-2">
+      <div class="workflow-section-header">
+        <div class="workflow-header-left">
+          <span class="section-step-pill">Step 2</span>
+          <div>
+            <h2 class="workflow-section-title">Run or Ingest a Scenario</h2>
+            <p class="workflow-section-desc">Trigger a targeted attack against the replica to see real-time defense, or ingest background traffic for triage.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario Cards Grid -->
+      <div class="scenarios-grid" id="scenario-triggers">
+        <!-- Scenario 1: Brute Force -->
+        <div class="scenario-action-card">
+          <div class="scenario-action-top">
+            <span class="scenario-type-badge scenario-badge-attack">Attack Scenario</span>
+            <code class="scenario-route-tag">/replica/login</code>
+          </div>
+          <h4 class="scenario-name">1. Slow-Rate Credential Spray</h4>
+          <p class="scenario-desc">Simulates slow password spray attacks against single sign-on. Requires confirmed authentication failures (&ge; 5) before SentinelX activates an ephemeral block.</p>
+          <button id="btn-run-scenario-bruteforce" class="btn-scenario btn-scenario-primary">
+            Run BruteForce Scenario
+          </button>
+        </div>
+
+        <!-- Scenario 2: Honeypot Decoy -->
+        <div class="scenario-action-card">
+          <div class="scenario-action-top">
+            <span class="scenario-type-badge scenario-badge-decoy">Decoy Trap</span>
+            <code class="scenario-route-tag">/replica/admin-decoy</code>
+          </div>
+          <h4 class="scenario-name">2. Decoy Trap Recon Probe</h4>
+          <p class="scenario-desc">Simulates reconnaissance probing against a hidden maintenance gateway. The honeypot interaction creates instant independent evidence, triggering immediate defense.</p>
+          <button id="btn-run-scenario-honeypot" class="btn-scenario btn-scenario-accent">
+            Run Honeypot Decoy Scenario
+          </button>
+        </div>
+
+        <!-- Scenario 3: Authorized Benign Burst -->
+        <div class="scenario-action-card">
+          <div class="scenario-action-top">
+            <span class="scenario-type-badge scenario-badge-allowed">Allowlist Test</span>
+            <code class="scenario-route-tag">/replica/portal</code>
+          </div>
+          <h4 class="scenario-name">3. Authorized Administrative Burst</h4>
+          <p class="scenario-desc">Simulates high-volume burst traffic from trusted student-portal client <code>10.0.0.99</code>. Confirms allowlist bypass prevents false-positive disruption.</p>
+          <button id="btn-run-scenario-benign" class="btn-scenario btn-scenario-secondary">
+            Run Benign Burst Scenario
+          </button>
+        </div>
+      </div>
+
+      <!-- Ingestion Subpanel -->
+      <div class="ingestion-subpanel">
+        <span class="ingestion-subpanel-title">Or Ingest Background Netflow Data:</span>
+        <div class="ingestion-buttons-group">
+          <button id="btn-load-sample" class="btn btn-secondary">
+            Ingest Sample Traffic
+          </button>
+          <button id="btn-load-phase3" class="btn btn-warning" title="Ingest synthetic Nginx and ModSecurity logs and correlate with flows">
+            Ingest Phase 3 Correlated Logs
+          </button>
+          <button id="btn-shadow-replay" class="btn btn-info" title="Run shadow-mode evaluation on sample dataset without network action">
+            Run Shadow Replay
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STEP 3: REVIEW THE ALERT                                 -->
+    <!-- ======================================================== -->
+    <section class="workflow-section" id="step-3">
+      <div class="workflow-section-header">
+        <div class="workflow-header-left">
+          <span class="section-step-pill">Step 3</span>
+          <div>
+            <h2 class="workflow-section-title">Review the Alert &amp; Triage Decisions</h2>
+            <p class="workflow-section-desc">Inspect multimodal scores, independent confirming evidence, and record human analyst triage decisions.</p>
+          </div>
+        </div>
+        <span class="queue-count-badge" id="queue-count-label">Showing 0 alerts</span>
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="controls-bar">
+        <div class="filter-group">
+          <label for="filter-tier">Risk Tier:</label>
+          <select id="filter-tier">
+            <option value="">All Tiers</option>
+            <option value="CRITICAL">Critical (&ge; 0.80)</option>
+            <option value="HIGH">High (0.60 - 0.79)</option>
+            <option value="MEDIUM">Medium (0.30 - 0.59)</option>
+            <option value="LOW">Low (&lt; 0.30)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-family">Attack Family:</label>
+          <select id="filter-family">
+            <option value="">All Families</option>
+            <option value="DoS_DDoS">DoS / DDoS</option>
+            <option value="PortScan">PortScan</option>
+            <option value="BruteForce">BruteForce</option>
+            <option value="WebAttack">WebAttack</option>
+            <option value="Bot">Bot</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-status">Review Status:</label>
+          <select id="filter-status">
+            <option value="">All Statuses</option>
+            <option value="PENDING">Pending Review</option>
+            <option value="CONFIRMED_INCIDENT">Confirmed Incident</option>
+            <option value="IN_INVESTIGATION">In Investigation</option>
+            <option value="ESCALATED_TIER_2">Escalated to Tier 2</option>
+            <option value="BENIGN_SUPPRESSED">Benign / Suppressed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Main Alert Feed Grid -->
+      <div class="alert-feed-grid" id="alerts-container">
+        <div class="empty-state">
+          <p>No alerts in review queue. Run a scenario in Step 2 or click <strong>"Ingest Sample Traffic"</strong> above.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STEP 4: SEE THE OUTCOME                                  -->
+    <!-- ======================================================== -->
+    <section class="workflow-section" id="step-4">
+      <div class="workflow-section-header">
+        <div class="workflow-header-left">
+          <span class="section-step-pill">Step 4</span>
+          <div>
+            <h2 class="workflow-section-title">See the Defense Outcome &amp; Audit Trail</h2>
+            <p class="workflow-section-desc">View active ephemeral blocks in memory and review the complete policy decision audit trail.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outcome Layout -->
+      <div class="outcome-layout-grid">
+        <!-- Active Ephemeral Blocks Box -->
+        <div class="active-blocks-box" id="active-blocks-box">
+          <div class="box-header-row">
+            <h4 class="box-title-heading">Active Ephemeral Blocks (Automatic TTL Expiry)</h4>
+            <span class="box-badge-sub">Local Replica In-Memory Interceptor</span>
+          </div>
+          <div id="active-blocks-container">
+            <p style="font-size: 0.85rem; color: var(--text-muted);">No active blocks. (All traffic permitted).</p>
+          </div>
+        </div>
+
+        <!-- Live Enforcement Decisions Audit Feed -->
+        <div class="audit-feed-box">
+          <div class="box-header-row">
+            <h4 class="box-title-heading">Enforcement Decision Audit Trail (Latest 5 Events)</h4>
+            <span class="box-badge-sub">Immutable Decision Log</span>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>Event Time</th>
+                  <th>Site &amp; Route</th>
+                  <th>Source IP / Target</th>
+                  <th>Suspected Attack</th>
+                  <th>Supporting Evidence</th>
+                  <th>Action &amp; Status</th>
+                  <th>Outcome &amp; Policy</th>
+                </tr>
+              </thead>
+              <tbody id="audit-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 16px;">
+                    No enforcement events recorded yet. Run a scenario in Step 2 to generate events.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STEP 5: RESET WHEN FINISHED                              -->
+    <!-- ======================================================== -->
+    <section class="workflow-section workflow-section-reset" id="step-5">
+      <div class="reset-panel-content">
+        <div class="reset-text-group">
+          <span class="section-step-pill" style="background: #334155; color: #cbd5e1;">Step 5</span>
+          <div>
+            <h3 class="reset-title">Reset Demo Scenario</h3>
+            <p class="reset-desc">
+              Clears active temporary test blocks on the local replica and restores baseline state.
+              <strong>Leaves analyst reviews, audit records, and historical alerts completely preserved.</strong>
+            </p>
+          </div>
+        </div>
+        <div class="reset-actions-group">
+          <button id="btn-reset-scenario" class="btn-scenario btn-scenario-reset">
+            Reset Demo Scenario
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- EXPANDABLE ADVANCED METRICS & TECHNICAL DETAILS         -->
+    <!-- ======================================================== -->
+    <section class="advanced-expandables-group">
+      <!-- Expandable 1: Advanced ML Diagnostics & KPIs -->
+      <details class="advanced-accordion" id="acc-ml-metrics">
+        <summary class="advanced-summary">
+          <div class="summary-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <span class="summary-title">Advanced Machine Learning Diagnostics &amp; Queue Statistics</span>
+          </div>
+          <span class="summary-toggle-pill">Click to expand</span>
+        </summary>
+        <div class="accordion-body">
+          <div class="kpi-grid">
+            <div class="kpi-card" id="kpi-total">
+              <div class="kpi-label">Total Flow Alerts</div>
+              <div class="kpi-value" id="val-total">0</div>
+              <div class="kpi-sub">Processed by Guard</div>
+            </div>
+            <div class="kpi-card kpi-warning" id="kpi-pending">
+              <div class="kpi-label">Pending Review</div>
+              <div class="kpi-value" id="val-pending">0</div>
+              <div class="kpi-sub">Awaiting Analyst Action</div>
+            </div>
+            <div class="kpi-card kpi-danger" id="kpi-high-priority">
+              <div class="kpi-label">High Priority</div>
+              <div class="kpi-value" id="val-high-priority">0</div>
+              <div class="kpi-sub">Critical / High Risk Tiers</div>
+            </div>
+            <div class="kpi-card kpi-confirmed" id="kpi-confirmed">
+              <div class="kpi-label">Confirmed Incidents</div>
+              <div class="kpi-value" id="val-confirmed">0</div>
+              <div class="kpi-sub">Verified Attack Flows</div>
+            </div>
+            <div class="kpi-card kpi-suppressed" id="kpi-suppressed">
+              <div class="kpi-label">Suppressed / Benign</div>
+              <div class="kpi-value" id="val-suppressed">0</div>
+              <div class="kpi-sub">Marked Benign / Suppressed</div>
+            </div>
+          </div>
+          <div class="model-meta-strip">
+            <span class="param-pill">Activation Threshold &tau;*: <strong>0.56</strong></span>
+            <span class="param-pill">Boost Magnitude &gamma;*: <strong>0.41</strong></span>
+            <span class="param-pill">Features: <strong>76 Canonical Netflow</strong></span>
+            <span class="param-pill">Architecture: <strong>Autoencoder Baseline + Calibrated XGBoost</strong></span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Expandable 2: Shadow Mode Observability & Signal Drift -->
+      <details class="advanced-accordion" id="acc-observability">
+        <summary class="advanced-summary">
+          <div class="summary-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span class="summary-title">Shadow Mode Operational Observability &amp; Signal Drift</span>
+          </div>
+          <span class="summary-toggle-pill">Click to expand</span>
+        </summary>
+        <div class="accordion-body">
+          <div class="observability-bar" id="observability-bar">
+            <div class="obs-item">
+              <span class="obs-label">Operational Mode:</span>
+              <span class="obs-value"><span class="badge badge-outline" style="border-color: #3b82f6; color: #60a5fa;">SHADOW / MONITOR-ONLY</span></span>
+            </div>
+            <div class="obs-item">
+              <span class="obs-label">Latency (p50 / p95):</span>
+              <span class="obs-value" id="obs-latency">Loading...</span>
+            </div>
+            <div class="obs-item">
+              <span class="obs-label">Alerts Rate:</span>
+              <span class="obs-value" id="obs-alerts-hr">0.0/hr</span>
+            </div>
+            <div class="obs-item">
+              <span class="obs-label">Signal Quality:</span>
+              <span class="obs-value" id="obs-quality">0 misses / 0 invalid</span>
+            </div>
+            <div class="obs-item">
+              <span class="obs-label">Drift Status:</span>
+              <span class="obs-value" id="obs-drift"><span class="badge" style="background-color: #065f46; color: #6ee7b7;">Stable</span></span>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <!-- Detailed Alert Inspector & Review Modal -->
+  <div class="modal-backdrop" id="modal-backdrop" style="display: none;">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Alert Detail &amp; Telemetry Inspector</h3>
+          <span class="modal-alert-id" id="modal-alert-id">Alert ID</span>
+        </div>
+        <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Score & Status Breakdown Grid -->
+        <div class="detail-scores-grid">
+          <div class="detail-score-box">
+            <span class="box-title">Gated Production Score</span>
+            <span class="box-value highlight-score" id="modal-prod-score">0.0000</span>
+            <span class="box-sub">Autoencoder-Anchored Boost</span>
+          </div>
+          <div class="detail-score-box">
+            <span class="box-title">Autoencoder Reconstruction</span>
+            <span class="box-value" id="modal-ae-score">0.0000</span>
+            <span class="box-sub">Unsupervised Baseline (s_AE)</span>
+          </div>
+          <div class="detail-score-box">
+            <span class="box-title">XGBoost Supervised Score</span>
+            <span class="box-value" id="modal-xgb-score">0.0000</span>
+            <span class="box-sub">Calibrated Probability (s_XGB)</span>
+          </div>
+          <div class="detail-score-box">
+            <span class="box-title">Gated Boost Activation</span>
+            <span class="box-value" id="modal-gated-active">Inactive</span>
+            <span class="box-sub">Threshold &tau;* = 0.56</span>
+          </div>
+        </div>
+
+        <!-- Confirming Signals Section -->
+        <div class="modal-section">
+          <h4>Independent Confirming Signals</h4>
+          <table class="signals-table">
+            <thead>
+              <tr>
+                <th>Signal</th>
+                <th>Status</th>
+                <th>Observed Value</th>
+                <th>Threshold</th>
+                <th>Verification State</th>
+                <th>Evidence Description</th>
+              </tr>
+            </thead>
+            <tbody id="modal-signals-table-body">
+              <!-- Rendered Signals -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Policy Notes -->
+        <div class="modal-section">
+          <h4>Applied Guardrails &amp; Policy Notes</h4>
+          <ul class="policy-notes-list" id="modal-policy-notes">
+            <!-- Notes -->
+          </ul>
+        </div>
+
+        <!-- Flow Telemetry Accordion (Expandable to keep modal clean) -->
+        <div class="modal-section">
+          <details>
+            <summary style="font-size: 0.88rem; font-weight: 600; color: #cbd5e1; cursor: pointer; padding: 6px 0; user-select: none;">
+              Behavioral Flow Telemetry (76 Canonical Features) &mdash; Click to view details
+            </summary>
+            <div class="telemetry-table-wrapper" style="margin-top: 10px;">
+              <table class="telemetry-table">
+                <thead>
+                  <tr>
+                    <th>Feature Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody id="modal-telemetry-table-body">
+                  <!-- Telemetry Key-Values -->
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+
+        <!-- Analyst Review Action Panel -->
+        <div class="modal-section review-action-box">
+          <h4>Record Analyst Triage Decision</h4>
+          <p class="review-instruction">
+            Select the appropriate triage action and document your investigation rationale.
+            <em>(Autonomous inline blocking is disabled; decisions update the SOC investigation record.)</em>
+          </p>
+
+          <div class="notes-input-group">
+            <label for="analyst-notes">Investigation Notes / Rationale:</label>
+            <textarea id="analyst-notes" rows="3" placeholder="Enter findings, corroborating firewall logs, or rationale..."></textarea>
+          </div>
+
+          <div class="triage-buttons-grid">
+            <button class="btn btn-confirm" data-action="CONFIRM_INCIDENT">
+              Confirm Incident
+            </button>
+            <button class="btn btn-investigate" data-action="INVESTIGATE_FURTHER">
+              Investigate Further
+            </button>
+            <button class="btn btn-escalate" data-action="ESCALATE_TIER_2">
+              Escalate to Tier 2
+            </button>
+            <button class="btn btn-suppress" data-action="MARK_BENIGN">
+              Mark Benign / Suppress
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/dashboard/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sample Domain Security Verification Report · SentinelX</title>
+  <meta name="description" content="Demonstration security verification report for example.com in the standard SentinelX format: findings with severity, confidence, plain-English impact, evidence, and remediation.">
+  <link rel="icon" href="assets/brand/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="sd-skip" href="#main">Skip to content</a>
+
+  <!-- Header -->
+  <header class="hdr" data-header>
+    <div class="hdr__bar">
+      <a class="hdr__brand" href="index.html" aria-label="SentinelX home">
+        <img class="hdr__word" src="assets/brand/wordmark.svg" alt="SentinelX" width="137" height="40">
+        <img class="hdr__mark" src="assets/brand/mark.svg" alt="SentinelX" width="30" height="35">
+      </a>
+
+      <nav class="hdr__nav" aria-label="Main">
+        <ul role="list">
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="pricing.html">Security Checks</a></li>
+          <li><a href="sample-report.html" aria-current="page">Sample report</a></li>
+          <li class="hdr__who">
+            <button type="button" class="hdr__whobtn" aria-expanded="false" aria-controls="who-menu" data-who-btn>
+              Who it's for
+              <svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="hdr__whomenu sd-panel" id="who-menu" hidden>
+              <ul role="list">
+                <li><a href="how-it-works.html"><b>Site Owners</b><span>Actionable findings with evidence you can forward</span></a></li>
+                <li><a href="how-it-works.html"><b>DevOps &amp; Infra</b><span>Public posture and cryptographic verification</span></a></li>
+                <li><a href="how-it-works.html"><b>Security Engineers</b><span>Deterministic read-only checks without intrusive probes</span></a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="hdr__actions">
+        <a class="hdr__signin" href="sample-report.html" style="font-weight:600;">Sample Report</a>
+        <a class="sd-btn sd-btn--primary" href="index.html#check">Inspect a domain</a>
+        <button type="button" class="hdr__menu" aria-expanded="false" aria-controls="mnav" aria-label="Open menu" data-menu>
+          <svg class="sd-icon sd-icon--20 hdr__icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+          <svg class="sd-icon sd-icon--20 hdr__icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          <span class="hdr__menulabel" aria-hidden="true">Close</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- Intro Banner -->
+    <section class="sd-intro" aria-labelledby="page-title">
+      <div class="sd-container">
+        <nav class="sd-crumbs" aria-label="Breadcrumb">
+          <ol role="list">
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Sample report</li>
+          </ol>
+        </nav>
+        <div class="sd-intro__grid">
+          <div class="sd-intro__copy">
+            <p class="sd-eyebrow">Diagnostic Reference</p>
+            <h1 class="sd-display" id="page-title">Verification report.<span class="sd-dim">Structured evidence &amp; fixes.</span></h1>
+          </div>
+          <div class="sd-intro__side">
+            <span class="sd-tag sd-tag--simulated" style="font-weight:700; margin-bottom:8px; display:inline-block;">DEMONSTRATION SAMPLE REPORT</span>
+            <p class="sd-lead">Written as an educational reference for the reserved address <code>example.com</code>. Illustrates report structure, observed wire evidence, and actionable fixes.</p>
+            <div class="sd-actions">
+              <a class="sd-btn sd-btn--primary" href="index.html#check">Inspect your domain <svg class="sd-icon sd-icon--14 sd-icon--move" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <button type="button" class="sd-btn sd-btn--secondary" onclick="window.print()">
+                <svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2zM14 2v5a1 1 0 0 0 1 1h5M12 18v-6M9 15l3 3 3-3"/></svg>
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Report Summary Card -->
+    <section class="sd-container" style="margin-bottom: 24px;">
+      <div class="sum sd-panel">
+        <div class="sum__top">
+          <h2 class="sum__title">
+            <svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2zM14 2v5a1 1 0 0 0 1 1h5M10 9H8M16 13H8M16 17H8"/></svg>
+            <span><b>SentinelX Posture Inspection</b> · example.com</span>
+          </h2>
+          <span class="sd-sample">Sample Reference</span>
+        </div>
+
+        <dl class="sum__figs">
+          <div class="is-good">
+            <dt>Areas checked</dt>
+            <dd class="sd-num">11</dd>
+          </div>
+          <div class="is-good">
+            <dt>In good shape</dt>
+            <dd class="sd-num">4</dd>
+          </div>
+          <div>
+            <dt>Remediations</dt>
+            <dd class="sd-num">3</dd>
+          </div>
+          <div>
+            <dt>Priority Action</dt>
+            <dd class="sd-num">2</dd>
+          </div>
+        </dl>
+
+        <ul class="sum__good" role="list">
+          <li><span class="sum__tick">✓</span>Target service answers over HTTPS on port 443</li>
+          <li><span class="sum__tick">✓</span>Unencrypted HTTP connections redirect to HTTPS (301 Moved Permanently)</li>
+          <li><span class="sum__tick">✓</span>Valid SPF record is published and syntax validated over DNS</li>
+          <li><span class="sum__tick">✓</span>Clean standing on public safe browsing blocklists</li>
+        </ul>
+
+        <div class="sum__sev">
+          <div class="sum__bar" role="img" aria-label="2 Medium, 3 Low, 1 Informational">
+            <span class="sum__seg--medium" style="width:33.3%"></span>
+            <span class="sum__seg--low" style="width:50%"></span>
+            <span class="sum__seg--informational" style="width:16.7%"></span>
+          </div>
+          <ul class="sum__legend" role="list">
+            <li><span class="sum__dot sum__seg--medium"></span>2 Medium</li>
+            <li><span class="sum__dot sum__seg--low"></span>3 Low</li>
+            <li><span class="sum__dot sum__seg--informational"></span>1 Informational</li>
+          </ul>
+        </div>
+
+        <div class="sum__start">
+          <p><b>Recommended starting point:</b> Suppress server version leak (F1) and harden session cookies (F2), then publish domain DMARC policy (F3).</p>
+        </div>
+      </div>
+
+      <!-- Interactive Sample Report Explorer -->
+      <div class="sr sd-panel" data-sample-report>
+        <div class="sr__bar">
+          <div class="sr__filters" role="group" aria-label="Filter by severity">
+            <button type="button" class="sr__chip" aria-pressed="true" data-filter="all">All <span class="sd-num">6</span></button>
+            <button type="button" class="sr__chip" aria-pressed="false" data-filter="medium">Medium <span class="sd-num">2</span></button>
+            <button type="button" class="sr__chip" aria-pressed="false" data-filter="low">Low <span class="sd-num">3</span></button>
+            <button type="button" class="sr__chip" aria-pressed="false" data-filter="informational">Info <span class="sd-num">1</span></button>
+          </div>
+        </div>
+
+        <div class="sr__body">
+          <div class="sr__col">
+            <ul class="sr__list" role="list">
+              <li class="sr__head" aria-hidden="true">
+                <span>Severity</span>
+                <span>Finding</span>
+                <span>Effort</span>
+              </li>
+
+              <li data-sev="medium">
+                <button type="button" class="sr__row" aria-controls="srd-F1" aria-current="true" data-row="F1">
+                  <span><span class="sd-tag sd-tag--medium">Medium</span></span>
+                  <span class="sr__t">Outdated server version announced</span>
+                  <span class="sr__e">Hours</span>
+                </button>
+              </li>
+
+              <li data-sev="medium">
+                <button type="button" class="sr__row" aria-controls="srd-F2" data-row="F2">
+                  <span><span class="sd-tag sd-tag--medium">Medium</span></span>
+                  <span class="sr__t">Missing cookie security attributes</span>
+                  <span class="sr__e">Minutes</span>
+                </button>
+              </li>
+
+              <li data-sev="low">
+                <button type="button" class="sr__row" aria-controls="srd-F3" data-row="F3">
+                  <span><span class="sd-tag sd-tag--low">Low</span></span>
+                  <span class="sr__t">Missing DMARC anti-spoofing policy</span>
+                  <span class="sr__e">Minutes</span>
+                </button>
+              </li>
+
+              <li data-sev="low">
+                <button type="button" class="sr__row" aria-controls="srd-F4" data-row="F4">
+                  <span><span class="sd-tag sd-tag--low">Low</span></span>
+                  <span class="sr__t">Enforce HSTS downgrade defense</span>
+                  <span class="sr__e">Minutes</span>
+                </button>
+              </li>
+
+              <li data-sev="low">
+                <button type="button" class="sr__row" aria-controls="srd-F5" data-row="F5">
+                  <span><span class="sd-tag sd-tag--low">Low</span></span>
+                  <span class="sr__t">Deploy Content Security Policy (CSP)</span>
+                  <span class="sr__e">Days</span>
+                </button>
+              </li>
+
+              <li data-sev="informational">
+                <button type="button" class="sr__row" aria-controls="srd-F6" data-row="F6">
+                  <span><span class="sd-tag sd-tag--informational">Info</span></span>
+                  <span class="sr__t">Publish RFC 9116 security.txt policy</span>
+                  <span class="sr__e">Minutes</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="sr__detail">
+            <!-- F1 -->
+            <article class="sr__panel is-shown" id="srd-F1">
+              <header class="sr__ph">
+                <p class="sr__pid sd-mono">F1 · technology-fingerprint</p>
+                <h3 class="sd-h3">Outdated server version announced</h3>
+                <div class="sr__tags">
+                  <span class="sd-tag sd-tag--medium">Medium</span>
+                  <span class="sd-tag sd-tag--plain">Sample Finding</span>
+                  <span class="sd-tag sd-tag--plain"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Hours</span>
+                </div>
+              </header>
+              <dl class="sr__dl">
+                <div>
+                  <dt>Context</dt>
+                  <dd>The response header advertises PHP 7.4.3. PHP 7.4 reached end-of-life status on 28 November 2022 and no longer receives official security patches.</dd>
+                </div>
+                <div>
+                  <dt>Observed Evidence</dt>
+                  <dd><pre><code>X-Powered-By: PHP/7.4.3&#10;Server: Apache/2.4.41 (Ubuntu)</code></pre></dd>
+                </div>
+                <div>
+                  <dt>Expected Baseline</dt>
+                  <dd><code>Supported runtime (PHP 8.2+) with version disclosure disabled (expose_php = Off)</code></dd>
+                </div>
+                <div>
+                  <dt>Remediation</dt>
+                  <dd>Upgrade to an actively supported runtime and disable version announcement headers in server configuration (<code>ServerTokens Prod</code> and <code>expose_php = Off</code>).</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- F2 -->
+            <article class="sr__panel" id="srd-F2">
+              <header class="sr__ph">
+                <p class="sr__pid sd-mono">F2 · cookie-flags</p>
+                <h3 class="sd-h3">Missing cookie security attributes</h3>
+                <div class="sr__tags">
+                  <span class="sd-tag sd-tag--medium">Medium</span>
+                  <span class="sd-tag sd-tag--plain">Sample Finding</span>
+                  <span class="sd-tag sd-tag--plain"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Minutes</span>
+                </div>
+              </header>
+              <dl class="sr__dl">
+                <div>
+                  <dt>Context</dt>
+                  <dd>The session cookie lacks the <code>Secure</code> and <code>HttpOnly</code> flags. Unflagged session tokens can be leaked over plaintext HTTP or accessed via client-side script injection.</dd>
+                </div>
+                <div>
+                  <dt>Observed Evidence</dt>
+                  <dd><pre><code>Set-Cookie: PHPSESSID=b48da1e2f3a4c5d6; path=/</code></pre></dd>
+                </div>
+                <div>
+                  <dt>Expected Baseline</dt>
+                  <dd><code>Set-Cookie: PHPSESSID=...; path=/; Secure; HttpOnly; SameSite=Lax</code></dd>
+                </div>
+                <div>
+                  <dt>Remediation</dt>
+                  <dd>Configure <code>session.cookie_secure = 1</code>, <code>session.cookie_httponly = 1</code>, and <code>session.cookie_samesite = "Lax"</code> in php.ini or application middleware.</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- F3 -->
+            <article class="sr__panel" id="srd-F3">
+              <header class="sr__ph">
+                <p class="sr__pid sd-mono">F3 · email-dmarc</p>
+                <h3 class="sd-h3">Missing DMARC anti-spoofing policy</h3>
+                <div class="sr__tags">
+                  <span class="sd-tag sd-tag--low">Low</span>
+                  <span class="sd-tag sd-tag--plain">Sample Finding</span>
+                  <span class="sd-tag sd-tag--plain"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Minutes</span>
+                </div>
+              </header>
+              <dl class="sr__dl">
+                <div>
+                  <dt>Context</dt>
+                  <dd>No DMARC policy is published in DNS at <code>_dmarc.example.com</code>. Receiving mail servers have no instructions on how to handle spoofed messages pretending to come from your domain.</dd>
+                </div>
+                <div>
+                  <dt>Observed Evidence</dt>
+                  <dd><pre><code>DNS TXT _dmarc.example.com: (No record found)</code></pre></dd>
+                </div>
+                <div>
+                  <dt>Expected Baseline</dt>
+                  <dd><code>v=DMARC1; p=none; rua=mailto:dmarc-reports@example.com</code></dd>
+                </div>
+                <div>
+                  <dt>Remediation</dt>
+                  <dd>Add a TXT record at <code>_dmarc.example.com</code> with monitoring mode enabled (<code>p=none</code>), inspect aggregate delivery reports, and graduate to enforcement (<code>p=quarantine</code> or <code>p=reject</code>).</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- F4 -->
+            <article class="sr__panel" id="srd-F4">
+              <header class="sr__ph">
+                <p class="sr__pid sd-mono">F4 · transport-hsts</p>
+                <h3 class="sd-h3">Enforce HSTS downgrade defense</h3>
+                <div class="sr__tags">
+                  <span class="sd-tag sd-tag--low">Low</span>
+                  <span class="sd-tag sd-tag--plain">Sample Finding</span>
+                  <span class="sd-tag sd-tag--plain"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Minutes</span>
+                </div>
+              </header>
+              <dl class="sr__dl">
+                <div>
+                  <dt>Context</dt>
+                  <dd>The root endpoint does not serve the <code>Strict-Transport-Security</code> header. Browsers will not pin HTTPS connections and remain susceptible to SSL-stripping downgrade attacks.</dd>
+                </div>
+                <div>
+                  <dt>Observed Evidence</dt>
+                  <dd><pre><code>Strict-Transport-Security: (Header absent in HTTPS response)</code></pre></dd>
+                </div>
+                <div>
+                  <dt>Expected Baseline</dt>
+                  <dd><code>Strict-Transport-Security: max-age=31536000; includeSubDomains</code></dd>
+                </div>
+                <div>
+                  <dt>Remediation</dt>
+                  <dd>Add the HSTS response header in web server configuration (Nginx: <code>add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;</code>).</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- F5 -->
+            <article class="sr__panel" id="srd-F5">
+              <header class="sr__ph">
+                <p class="sr__pid sd-mono">F5 · security-headers-csp</p>
+                <h3 class="sd-h3">Deploy Content Security Policy (CSP)</h3>
+                <div class="sr__tags">
+                  <span class="sd-tag sd-tag--low">Low</span>
+                  <span class="sd-tag sd-tag--plain">Sample Finding</span>
+                  <span class="sd-tag sd-tag--plain"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Days</span>
+                </div>
+              </header>
+              <dl class="sr__dl">
+                <div>
+                  <dt>Context</dt>
+                  <dd>No Content Security Policy header was detected. CSP prevents unauthorized scripts, frames, and resource loading to mitigate cross-site scripting (XSS).</dd>
+                </div>
+                <div>
+                  <dt>Observed Evidence</dt>
+                  <dd><pre><code>Content-Security-Policy: (Header absent)</code></pre></dd>
+                </div>
+                <div>
+                  <dt>Expected Baseline</dt>
+                  <dd><code>Content-Security-Policy-Report-Only: default-src 'self'; ...</code></dd>
+                </div>
+                <div>
+                  <dt>Remediation</dt>
+                  <dd>Deploy a report-only CSP to audit third-party script and resource dependencies, then transition to enforcement mode.</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- F6 -->
+            <article class="sr__panel" id="srd-F6">
+              <header class="sr__ph">
+                <p class="sr__pid sd-mono">F6 · vulnerability-disclosure</p>
+                <h3 class="sd-h3">Publish RFC 9116 security.txt policy</h3>
+                <div class="sr__tags">
+                  <span class="sd-tag sd-tag--informational">Info</span>
+                  <span class="sd-tag sd-tag--plain">Sample Finding</span>
+                  <span class="sd-tag sd-tag--plain"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Minutes</span>
+                </div>
+              </header>
+              <dl class="sr__dl">
+                <div>
+                  <dt>Context</dt>
+                  <dd>No security contact policy was found at <code>/.well-known/security.txt</code>. Security researchers have no established channel to privately report vulnerabilities.</dd>
+                </div>
+                <div>
+                  <dt>Observed Evidence</dt>
+                  <dd><pre><code>GET /.well-known/security.txt -> 404 Not Found</code></pre></dd>
+                </div>
+                <div>
+                  <dt>Expected Baseline</dt>
+                  <dd><code>Contact: mailto:security@example.com&#10;Expires: 2027-12-31T23:59:59.000Z</code></dd>
+                </div>
+                <div>
+                  <dt>Remediation</dt>
+                  <dd>Create <code>/.well-known/security.txt</code> conforming to RFC 9116 with designated security contact email, encryption key, and expiration date.</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scope & Limits Information -->
+    <section class="sd-section sd-section--white" aria-labelledby="scope-details-title">
+      <div class="sd-container" data-tabs>
+        <div class="sd-head sd-head--split">
+          <div>
+            <p class="sd-eyebrow">Methodology</p>
+            <h2 class="sd-h2" id="scope-details-title">Inspection Boundaries.</h2>
+          </div>
+          <div role="tablist" class="more__tabs">
+            <button type="button" role="tab" id="tab-scope" aria-controls="panel-scope" aria-selected="true" tabindex="0">Public Scope</button>
+            <button type="button" role="tab" id="tab-limits" aria-controls="panel-limits" aria-selected="false" tabindex="-1">Boundaries &amp; Exclusions</button>
+          </div>
+        </div>
+
+        <div role="tabpanel" id="panel-scope" aria-labelledby="tab-scope" class="more__panel" tabindex="0">
+          <ul class="sd-checks" style="margin-top:16px;" role="list">
+            <li><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>HTTPS and HTTP 301 redirection verification</span></li>
+            <li><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>TLS certificate validation, cipher suites, and CA authority</span></li>
+            <li><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>HTTP response security headers (HSTS, CSP, XFO, XCTO)</span></li>
+            <li><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Public DNS email authentication records (SPF, DMARC, CAA)</span></li>
+            <li><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Coordinated vulnerability disclosure (RFC 9116 security.txt)</span></li>
+          </ul>
+        </div>
+
+        <div role="tabpanel" id="panel-limits" aria-labelledby="tab-limits" class="more__panel" tabindex="0" hidden>
+          <p class="sd-small sd-muted">Every SentinelX report concludes with this scope boundary: <i>SentinelX inspects web infrastructure exclusively from the outside, exactly as a modern client or visitor encounters it. We do not authenticate, submit forms, or execute intrusive exploitation.</i></p>
+          <h3 class="sd-h3" style="margin-top:16px;">What is strictly excluded from checks:</h3>
+          <ul class="sd-checks" style="margin-top:12px;" role="list">
+            <li class="is-no"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14"/></svg><span>No credential guessing, password brute-force, or authentication cracking</span></li>
+            <li class="is-no"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14"/></svg><span>No exploit payloads, SQL injection, fuzzing, or remote code execution tests</span></li>
+            <li class="is-no"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14"/></svg><span>No denial-of-service, traffic flooding, or resource exhaustion testing</span></li>
+            <li class="is-no"><svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14"/></svg><span>No internal mail server infrastructure penetration or unauthorized relay abuse</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="ftr">
+    <div class="sd-container">
+      <div class="ftr__grid">
+        <div class="ftr__brand">
+          <a href="index.html" aria-label="SentinelX home"><img src="assets/brand/wordmark.svg" alt="SentinelX" width="112" height="32"></a>
+          <p class="ftr__sub">Autonomous exterior posture verification with verifiable evidence and remediation.</p>
+        </div>
+        <nav aria-label="Product">
+          <h2 class="sd-eyebrow">Inspection</h2>
+          <ul role="list">
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="pricing.html">Security Checks</a></li>
+            <li><a href="sample-report.html">Sample report</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="ftr__legal">
+        <p>© 2026 SentinelX. Standalone Domain Security Inspector.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

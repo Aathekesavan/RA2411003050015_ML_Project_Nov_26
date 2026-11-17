@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Security Checks &amp; Public Scope · SentinelX</title>
+  <meta name="description" content="Non-disruptive exterior security inspection for modern websites: HTTPS, TLS handshake, HTTP security headers, public DNS email records, and RFC 9116 security.txt.">
+  <link rel="icon" href="assets/brand/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="sd-skip" href="#main">Skip to content</a>
+
+  <!-- Header -->
+  <header class="hdr" data-header>
+    <div class="hdr__bar">
+      <a class="hdr__brand" href="index.html" aria-label="SentinelX home">
+        <img class="hdr__word" src="assets/brand/wordmark.svg" alt="SentinelX" width="137" height="40">
+        <img class="hdr__mark" src="assets/brand/mark.svg" alt="SentinelX" width="30" height="35">
+      </a>
+
+      <nav class="hdr__nav" aria-label="Main">
+        <ul role="list">
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="pricing.html" aria-current="page">Security Checks</a></li>
+          <li><a href="sample-report.html">Sample report</a></li>
+          <li class="hdr__who">
+            <button type="button" class="hdr__whobtn" aria-expanded="false" aria-controls="who-menu" data-who-btn>
+              Who it's for
+              <svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="hdr__whomenu sd-panel" id="who-menu" hidden>
+              <ul role="list">
+                <li><a href="how-it-works.html"><b>Site Owners</b><span>Actionable findings with evidence you can forward</span></a></li>
+                <li><a href="how-it-works.html"><b>DevOps &amp; Infra</b><span>Public posture and cryptographic verification</span></a></li>
+                <li><a href="how-it-works.html"><b>Security Engineers</b><span>Deterministic read-only checks without intrusive probes</span></a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="hdr__actions">
+        <a class="hdr__signin" href="sample-report.html">Sample Report</a>
+        <a class="sd-btn sd-btn--primary" href="index.html#check">Inspect a domain</a>
+        <button type="button" class="hdr__menu" aria-expanded="false" aria-controls="mnav" aria-label="Open menu" data-menu>
+          <svg class="sd-icon sd-icon--20 hdr__icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+          <svg class="sd-icon sd-icon--20 hdr__icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          <span class="hdr__menulabel" aria-hidden="true">Close</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- Intro Header -->
+    <section class="sd-intro" aria-labelledby="scope-title">
+      <div class="sd-container">
+        <nav class="sd-crumbs" aria-label="Breadcrumb">
+          <ol role="list">
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Security Checks</li>
+          </ol>
+        </nav>
+        <div class="sd-intro__grid">
+          <div class="sd-intro__copy">
+            <p class="sd-eyebrow">Public Security Scope</p>
+            <h1 class="sd-display" id="scope-title">Exterior Posture.<span class="sd-dim">Transparent verification.</span></h1>
+          </div>
+          <p class="sd-lead">SentinelX evaluates exterior web posture using strictly non-disruptive, read-only public requests. No intrusive exploitation, no credential attacks, and no denial-of-service tests.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scope Breakdown & Interactive Scope Selector -->
+    <section class="sd-section sd-section--white" aria-label="Scope and coverage selector">
+      <div class="sd-container" style="display:grid; gap:40px;">
+        <ul class="sd-cards sd-cards--2" role="list">
+          <li class="sd-panel">
+            <svg class="sd-icon sd-icon--20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <h3 class="sd-h3">Polite, Read-Only Telemetry</h3>
+            <p class="sd-body sd-small">Probes look only at standard public endpoints (port 443 TLS, HTTP headers, DNS TXT/CAA records, and RFC 9116 security.txt).</p>
+          </li>
+          <li class="sd-panel">
+            <svg class="sd-icon sd-icon--20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="m16 9-5.5 5.5L8 12"/><circle cx="12" cy="12" r="10"/></svg>
+            <h3 class="sd-h3">Operator Authorization Required</h3>
+            <p class="sd-body sd-small">All checks require explicit operator confirmation before execution, ensuring responsible posture management.</p>
+          </li>
+        </ul>
+
+        <div class="scope-panel" style="align-items:start;">
+          <!-- Left: Verification Modules Card -->
+          <div class="scope-card" data-scope-overview>
+            <div>
+              <p class="sd-h3">Core Verification Modules</p>
+              <p class="sd-body sd-small" style="color:var(--sd-ink-2); margin-top:4px;">Every standard check evaluates the full exterior surface:</p>
+            </div>
+
+            <ul class="scope-modules" role="list">
+              <li class="scope-item">
+                <div>
+                  <h4>Transport &amp; Encryption</h4>
+                  <p>TLS certificate chain, expiration, ciphers, and HTTP 301 upgrade</p>
+                </div>
+                <span class="sd-tag sd-tag--verified">Active</span>
+              </li>
+              <li class="scope-item">
+                <div>
+                  <h4>Security Headers</h4>
+                  <p>Strict-Transport-Security, CSP, X-Frame-Options, X-Content-Type-Options</p>
+                </div>
+                <span class="sd-tag sd-tag--verified">Active</span>
+              </li>
+              <li class="scope-item">
+                <div>
+                  <h4>Email Authentication &amp; DNS</h4>
+                  <p>SPF records (v=spf1), DMARC policies (_dmarc), and CAA authority</p>
+                </div>
+                <span class="sd-tag sd-tag--verified">Active</span>
+              </li>
+              <li class="scope-item">
+                <div>
+                  <h4>Vulnerability Disclosure</h4>
+                  <p>RFC 9116 standard security policy at /.well-known/security.txt</p>
+                </div>
+                <span class="sd-tag sd-tag--verified">Active</span>
+              </li>
+            </ul>
+
+            <div style="border-top:1px solid var(--sd-border); padding-top:14px; font-size:13px; color:var(--sd-ink-2); display:flex; align-items:center; gap:8px;">
+              <svg class="sd-icon sd-icon--14" style="color:var(--sd-link);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Deterministic reproduction · Verifiable on the wire</span>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Inspection Scope Selector -->
+          <div class="scope-widget" data-scope-selector>
+            <div>
+              <h3 class="sd-h3">Audit Scope Explorer</h3>
+              <p class="sd-body sd-small" style="color:var(--sd-ink-2); margin-top:4px;">Customize the non-disruptive inspection modules to preview network footprint:</p>
+            </div>
+
+            <ul class="scope-widget__list" role="list">
+              <li>
+                <label class="scope-widget__item">
+                  <input type="checkbox" data-scope-check data-requests="2" checked>
+                  <div>
+                    <b>HTTPS Redirection &amp; Port 443 Handshake</b>
+                    <p style="font-size:12px; color:var(--sd-ink-2); margin:2px 0 0;">Validates upgrade from unencrypted HTTP and TLS cipher suite negotiation.</p>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="scope-widget__item">
+                  <input type="checkbox" data-scope-check data-requests="1" checked>
+                  <div>
+                    <b>HTTP Security Headers (HSTS, CSP, XFO)</b>
+                    <p style="font-size:12px; color:var(--sd-ink-2); margin:2px 0 0;">Audits browser defenses returned in HTTP response headers.</p>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="scope-widget__item">
+                  <input type="checkbox" data-scope-check data-requests="2" checked>
+                  <div>
+                    <b>DNS Email Records (SPF &amp; DMARC)</b>
+                    <p style="font-size:12px; color:var(--sd-ink-2); margin:2px 0 0;">Queries public TXT records via DNS-over-HTTPS to verify anti-spoofing.</p>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="scope-widget__item">
+                  <input type="checkbox" data-scope-check data-requests="1" checked>
+                  <div>
+                    <b>Certificate Authority Authorization (CAA)</b>
+                    <p style="font-size:12px; color:var(--sd-ink-2); margin:2px 0 0;">Verifies permitted Certificate Authorities allowed to issue certificates.</p>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="scope-widget__item">
+                  <input type="checkbox" data-scope-check data-requests="1" checked>
+                  <div>
+                    <b>RFC 9116 security.txt Disclosure</b>
+                    <p style="font-size:12px; color:var(--sd-ink-2); margin:2px 0 0;">Checks for public coordinated vulnerability disclosure contact details.</p>
+                  </div>
+                </label>
+              </li>
+            </ul>
+
+            <div class="scope-widget__sum">
+              <dl style="display:grid; gap:8px; margin:0;">
+                <div class="scope-widget__stat"><dt>Selected Areas</dt><dd data-scope-total>5 areas</dd></div>
+                <div class="scope-widget__stat"><dt>Estimated Requests</dt><dd data-scope-requests>7 polite probes</dd></div>
+                <div class="scope-widget__stat"><dt>Inspection Duration</dt><dd data-scope-time>&lt; 3s</dd></div>
+                <div class="scope-widget__stat"><dt>Coverage Level</dt><dd data-scope-posture>Full Exterior Coverage</dd></div>
+              </dl>
+
+              <a class="sd-btn sd-btn--primary sd-btn--block" href="index.html#check">
+                Inspect a Domain Now
+                <svg class="sd-icon sd-icon--14 sd-icon--move" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Included Checks Grid -->
+    <section class="sd-section" aria-labelledby="inc-title">
+      <div class="sd-container">
+        <div class="sd-head sd-head--split">
+          <div>
+            <p class="sd-eyebrow">Comprehensive Inspection</p>
+            <h2 class="sd-h2" id="inc-title">The Public Surface.<span class="sd-dim">Key areas evaluated in every check.</span></h2>
+          </div>
+        </div>
+
+        <ul class="ticks--full" role="list">
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">HTTPS and redirects</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Encryption (TLS) test</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Security headers</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Email security (SPF, DMARC)</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Server software fingerprints</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Disclosed advisories</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Cookie attributes</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Public blocklist standing</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">Client-side exposed keys</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">RFC 9116 security.txt</span></li>
+          <li><span class="ticks__tick">✓</span><span class="ticks__t">DNS CAA health</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Scope FAQs Section -->
+    <section class="sd-section sd-section--white" aria-labelledby="faq-title">
+      <div class="sd-container faq2">
+        <div class="sd-head">
+          <p class="sd-eyebrow">Safety &amp; Execution</p>
+          <h2 class="sd-h2" id="faq-title">Scope questions.</h2>
+        </div>
+
+        <div class="sd-faq">
+          <details>
+            <summary>Does SentinelX perform intrusive penetration testing?<svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5v14"/></svg></summary>
+            <p class="sd-faq__a">No. SentinelX strictly restricts its checks to passive, non-disruptive public telemetry. It never attempts exploit payloads, password brute-forcing, SQL injection tests, or denial-of-service stress testing.</p>
+          </details>
+
+          <details>
+            <summary>Why must I confirm authorization before checking?<svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5v14"/></svg></summary>
+            <p class="sd-faq__a">Security posture tools must be operated responsibly. Even though SentinelX checks are non-disruptive, requiring operator authorization ensures clear intent and compliance with security best practices.</p>
+          </details>
+
+          <details>
+            <summary>How can I run the full verified live inspection?<svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5v14"/></svg></summary>
+            <p class="sd-faq__a">Launch the standalone Python server in the REPLICA folder (<code>python server.py</code>). This enables live socket handshakes and response header inspection on localhost. If opened as a static page, public DNS is verified live via DoH with sample labels for CORS-restricted browser probes.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="ftr">
+    <div class="sd-container">
+      <div class="ftr__grid">
+        <div class="ftr__brand">
+          <a href="index.html" aria-label="SentinelX home"><img src="assets/brand/wordmark.svg" alt="SentinelX" width="112" height="32"></a>
+          <p class="ftr__sub">Autonomous exterior posture verification with verifiable evidence and remediation.</p>
+        </div>
+        <nav aria-label="Product">
+          <h2 class="sd-eyebrow">Inspection</h2>
+          <ul role="list">
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="pricing.html">Security Checks</a></li>
+            <li><a href="sample-report.html">Sample report</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="ftr__legal">
+        <p>© 2026 SentinelX. Standalone Domain Security Inspector.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

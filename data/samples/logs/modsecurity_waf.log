@@ -1,0 +1,5 @@
+# ModSecurity WAF Log - Synthetic Telemetry
+[2026-10-19 14:15:08 +0000] [client 198.51.100.42] ModSecurity: Access denied with code 403 (phase 2). [id "200002"] [msg "Rule 200002: Excessive Authentication Failures Triggered"] [severity "WARNING"] [uri "/api/v1/auth/login"]
+{"timestamp": "2026-10-19T14:15:10Z", "client_ip": "198.51.100.42", "status": 403, "rule_id": 200002, "message": "Excessive Failed Logins Threshold Exceeded", "action": "alert"}
+{"timestamp": "2026-10-19T14:15:10Z", malformed_json_missing_brace
+Just random text in waf file without client or brackets

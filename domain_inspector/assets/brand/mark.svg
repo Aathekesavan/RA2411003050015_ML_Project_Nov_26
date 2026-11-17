@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="sentinelx-mark-title">
+  <title id="sentinelx-mark-title">SentinelX</title>
+  <defs>
+    <linearGradient id="sx-mark-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="sx-accent-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Shield Contour -->
+  <path d="M50 8 L84 22 C84 55 68 78 50 92 C32 78 16 55 16 22 Z" fill="#0f172a" stroke="url(#sx-mark-grad)" stroke-width="4" stroke-linejoin="round" />
+  <!-- Inner Dynamic Guard Geometry -->
+  <path d="M50 20 L72 31 C72 56 61 72 50 82 C39 72 28 56 28 31 Z" fill="none" stroke="#1e293b" stroke-width="2.5" />
+  <!-- Center Nexus Cross / X-Wing Element -->
+  <path d="M38 36 L62 64 M62 36 L38 64" stroke="url(#sx-mark-grad)" stroke-width="5" stroke-linecap="round" />
+  <circle cx="50" cy="50" r="5" fill="#38bdf8" />
+</svg>

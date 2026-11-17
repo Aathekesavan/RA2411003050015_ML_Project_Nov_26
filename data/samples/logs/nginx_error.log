@@ -1,0 +1,13 @@
+# Nginx Error Log - Synthetic Telemetry
+2026/10/19 14:00:00 [notice] 1001#1001: using the "epoll" event method
+2026/10/19 14:00:00 [notice] 1001#1001: start worker process 1002
+2026/10/19 14:15:01 [error] 1002#1002: *101 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:02 [error] 1002#1002: *102 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:03 [error] 1002#1002: *103 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:04 [error] 1002#1002: *104 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:05 [error] 1002#1002: *105 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:06 [error] 1002#1002: *106 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:07 [error] 1002#1002: *107 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:08 [error] 1002#1002: *108 user "admin": password mismatch, client: 198.51.100.42, server: api.internal, request: "POST /api/v1/auth/login HTTP/1.1"
+2026/10/19 14:15:00 [crit] invalid line with missing client parameter
+broken timestamp log line [error] client: 1.2.3.4

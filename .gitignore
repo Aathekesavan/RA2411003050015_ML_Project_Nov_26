@@ -26,6 +26,10 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Large Archives (GitHub blocks files > 100 MB)
+*.zip
+!docs/sentinelx_ieee_latex_package.zip
+
 # Large artifacts & Models
 *.parquet
 *.joblib
@@ -33,4 +37,23 @@ results/models/
 results/unsw_nb15/models/
 scratch/
 .pytest_cache/
+*.db
+results/reviews/
 
+# Temporary Office & PDF draft files
+~$*.docx
+~$*.pptx
+test_*.docx
+test_*.pdf
+reduced_report*.pdf
+current_report.pdf
+SentinelX_Project_Report_Clean.docx
+SentinelX_Project_Report_Fixed.docx
+SentinelX_Project_Report_v2.docx
+SentinelX_Project_Report.docx
+SentinelX_Book_Chapter_Draft.*
+SentinelX_Project_Review_Presentation_4Slides.pptx
+
+# Medical Project (RetinaXAI files kept locally, not part of ML Network IDS)
+*retinaxai*
+*RetinaXAI*

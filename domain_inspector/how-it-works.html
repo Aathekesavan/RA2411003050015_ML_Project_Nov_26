@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>How Domain Security Inspection Works · SentinelX</title>
+  <meta name="description" content="Enter a domain, confirm authorization, and receive verified exterior security findings: TLS cryptographic test, HTTP security headers, and public DNS records with concrete evidence.">
+  <link rel="icon" href="assets/brand/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="sd-skip" href="#main">Skip to content</a>
+
+  <!-- Header -->
+  <header class="hdr" data-header>
+    <div class="hdr__bar">
+      <a class="hdr__brand" href="index.html" aria-label="SentinelX home">
+        <img class="hdr__word" src="assets/brand/wordmark.svg" alt="SentinelX" width="137" height="40">
+        <img class="hdr__mark" src="assets/brand/mark.svg" alt="SentinelX" width="30" height="35">
+      </a>
+
+      <nav class="hdr__nav" aria-label="Main">
+        <ul role="list">
+          <li><a href="how-it-works.html" aria-current="page">How it works</a></li>
+          <li><a href="pricing.html">Security Checks</a></li>
+          <li><a href="sample-report.html">Sample report</a></li>
+          <li class="hdr__who">
+            <button type="button" class="hdr__whobtn" aria-expanded="false" aria-controls="who-menu" data-who-btn>
+              Who it's for
+              <svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="hdr__whomenu sd-panel" id="who-menu" hidden>
+              <ul role="list">
+                <li><a href="how-it-works.html"><b>Site Owners</b><span>Actionable findings with evidence you can forward</span></a></li>
+                <li><a href="how-it-works.html"><b>DevOps &amp; Infra</b><span>Public posture and cryptographic verification</span></a></li>
+                <li><a href="how-it-works.html"><b>Security Engineers</b><span>Deterministic read-only checks without intrusive probes</span></a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="hdr__actions">
+        <a class="hdr__signin" href="sample-report.html">Sample Report</a>
+        <a class="sd-btn sd-btn--primary" href="index.html#check">Inspect a domain</a>
+        <button type="button" class="hdr__menu" aria-expanded="false" aria-controls="mnav" aria-label="Open menu" data-menu>
+          <svg class="sd-icon sd-icon--20 hdr__icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+          <svg class="sd-icon sd-icon--20 hdr__icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          <span class="hdr__menulabel" aria-hidden="true">Close</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- Intro Banner -->
+    <section class="sd-intro" aria-labelledby="page-title">
+      <div class="sd-container">
+        <nav class="sd-crumbs" aria-label="Breadcrumb">
+          <ol role="list">
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">How it works</li>
+          </ol>
+        </nav>
+        <div class="sd-intro__grid">
+          <div class="sd-intro__copy">
+            <p class="sd-eyebrow">Inspection Methodology</p>
+            <h1 class="sd-display" id="page-title">From a domain address<span class="sd-dim">to verified posture findings.</span></h1>
+          </div>
+          <div class="sd-intro__side">
+            <p class="sd-lead">Enter a domain, confirm operator authorization, and SentinelX evaluates exterior attack surfaces using non-disruptive, read-only requests with concrete proof.</p>
+            <div class="sd-actions">
+              <a class="sd-btn sd-btn--primary" href="index.html#check">Inspect a domain <svg class="sd-icon sd-icon--14 sd-icon--move" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <a class="sd-link-arrow" href="sample-report.html">See sample report <svg class="sd-icon sd-icon--14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Three Steps -->
+    <section class="sd-section" aria-labelledby="steps-title">
+      <div class="sd-container">
+        <div class="sd-head sd-head--split">
+          <div>
+            <p class="sd-eyebrow">Verification Flow</p>
+            <h2 class="sd-h2" id="steps-title">Enter an address.<span class="sd-dim">Review verified evidence.</span></h2>
+          </div>
+          <p class="sd-lead">Polite, non-intrusive exterior checks designed to run safely against production services.</p>
+        </div>
+
+        <ol class="steps3" role="list">
+          <li>
+            <p class="steps3__n sd-mono">01</p>
+            <h3 class="sd-h3">Enter Domain &amp; Authorize</h3>
+            <p class="sd-body sd-small">Confirm permission to inspect the public exterior. SentinelX prohibits unauthorized or intrusive probing.</p>
+          </li>
+          <li>
+            <p class="steps3__n sd-mono">02</p>
+            <h3 class="sd-h3">Non-Disruptive Inspection</h3>
+            <p class="sd-body sd-small">Light, read-only checks inspect HTTPS redirects, TLS certificates, response headers, and public DNS records.</p>
+          </li>
+          <li>
+            <p class="steps3__n sd-mono">03</p>
+            <h3 class="sd-h3">Actionable Posture Report</h3>
+            <p class="sd-body sd-small">Transparent report showing verified evidence, expected baseline, and prescribed remediation steps.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- What We Check Grid -->
+    <section class="sd-section sd-section--white" id="what-we-check" aria-labelledby="wwc-title">
+      <div class="sd-container">
+        <div class="sd-head sd-head--split">
+          <div>
+            <p class="sd-eyebrow">Public Surfaces</p>
+            <h2 class="sd-h2" id="wwc-title">Passive Checks.<span class="sd-dim">Concrete evidence and fixes.</span></h2>
+          </div>
+          <p class="sd-lead">Audits what your server and domain publish to the public internet, observed from the outside.</p>
+        </div>
+
+        <ul class="ticks--full" role="list">
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">HTTPS and redirects</a></h3>
+              <p class="sd-body sd-small">Ensures all visitors are upgraded to encrypted connections with HTTP 301 redirection.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Encryption (TLS) test</a></h3>
+              <p class="sd-body sd-small">Verifies certificate validity, trusted CA issuer, days to expiration, and modern TLS cipher suites.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Security headers</a></h3>
+              <p class="sd-body sd-small">Audits Strict-Transport-Security (HSTS), Content-Security-Policy (CSP), and X-Frame-Options.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Email security (SPF, DMARC, DKIM)</a></h3>
+              <p class="sd-body sd-small">Queries public DNS records to verify protection against domain spoofing and phishing.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Server software fingerprints</a></h3>
+              <p class="sd-body sd-small">Identifies leaked software versions in HTTP Server and X-Powered-By response headers.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Disclosed vulnerabilities</a></h3>
+              <p class="sd-body sd-small">Cross-references announced component versions against known security advisories.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Cookie attributes</a></h3>
+              <p class="sd-body sd-small">Verifies Secure, HttpOnly, and SameSite attributes on session cookies.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Public blocklist standing</a></h3>
+              <p class="sd-body sd-small">Checks if domain is flagged for malware, phishing, or deceptive practices.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">Client-side exposed keys</a></h3>
+              <p class="sd-body sd-small">Checks public homepage source code for inadvertently published credentials or tokens.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">RFC 9116 security.txt</a></h3>
+              <p class="sd-body sd-small">Checks for published security disclosure contacts at /.well-known/security.txt.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ticks__tick">✓</span>
+            <div class="ticks__body">
+              <h3 class="ticks__t"><a href="sample-report.html">DNS health &amp; CAA records</a></h3>
+              <p class="sd-body sd-small">Inspects Certificate Authority Authorization (CAA) records to limit certificate issuance.</p>
+            </div>
+          </li>
+        </ul>
+
+        <ul class="sd-cards sd-cards--2" style="margin-top: 40px;" role="list">
+          <li class="sd-panel">
+            <svg class="sd-icon sd-icon--20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <h3 class="sd-h3">Safe &amp; Non-Intrusive</h3>
+            <p class="sd-body sd-small">SentinelX operates entirely as an exterior client. No exploitation, fuzzing, or disruption of target systems.</p>
+          </li>
+          <li class="sd-panel">
+            <svg class="sd-icon sd-icon--20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="m16 9-5.5 5.5L8 12"/><circle cx="12" cy="12" r="10"/></svg>
+            <h3 class="sd-h3">Deterministic Evidence</h3>
+            <p class="sd-body sd-small">Every finding includes verbatim raw headers or DNS records so your engineering team can reproduce and verify.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Progress Timeline -->
+    <section class="sd-section sd-section--white" aria-labelledby="states-title">
+      <div class="sd-container sd-intro__grid">
+        <div class="sd-head">
+          <p class="sd-eyebrow">Inspection Lifecycle</p>
+          <h2 class="sd-h2" id="states-title">Real-Time Progress.<span class="sd-dim">From request to verified report.</span></h2>
+          <p class="sd-lead">Inspection completes in seconds with transparent status at every step.</p>
+        </div>
+
+        <ol class="states sd-panel" role="list">
+          <li>
+            <span class="states__dot"></span>
+            <div>
+              <h3 class="states__t">Authorization &amp; Preparation</h3>
+              <p class="sd-body sd-small">Target domain validated and operator authorization confirmed before any network traffic is initiated.</p>
+              <p class="states__can"><span>Action:</span> Enter target domain and confirm permission.</p>
+            </div>
+          </li>
+          <li>
+            <span class="states__dot"></span>
+            <div>
+              <h3 class="states__t">Transport &amp; Cryptographic Probes</h3>
+              <p class="sd-body sd-small">Polite TLS handshake on port 443 with SNI to inspect certificates, cipher negotiation, and HTTP redirects.</p>
+              <p class="states__can"><span>Action:</span> Read-only handshake completes in milliseconds.</p>
+            </div>
+          </li>
+          <li>
+            <span class="states__dot"></span>
+            <div>
+              <h3 class="states__t">Headers &amp; DNS Telemetry</h3>
+              <p class="sd-body sd-small">HTTP response headers retrieved and public DNS-over-HTTPS queried for SPF, DMARC, CAA, and security.txt.</p>
+              <p class="states__can"><span>Action:</span> Verifies published security defenses.</p>
+            </div>
+          </li>
+          <li class="is-end">
+            <span class="states__dot"></span>
+            <div>
+              <h3 class="states__t">Verified Report Rendered</h3>
+              <p class="sd-body sd-small">Findings mapped with severity, concrete observed evidence, and prioritized remediation guidance.</p>
+              <p class="states__can"><span>Action:</span> Review findings, export PDF, or print.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section class="sd-section" aria-labelledby="faq-title">
+      <div class="sd-container faq2">
+        <div class="sd-head">
+          <p class="sd-eyebrow">Questions &amp; Details</p>
+          <h2 class="sd-h2" id="faq-title">Technical answers.</h2>
+        </div>
+
+        <div class="sd-faq">
+          <details>
+            <summary>What exactly does SentinelX inspect?<svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5v14"/></svg></summary>
+            <p class="sd-faq__a">What your website advertises to the internet: HTTPS redirection, TLS certificate validity and issuer, security response headers (HSTS, CSP, XFO, XCTO), DNS email records (SPF, DMARC), CAA records, cookie attributes, and RFC 9116 security.txt.</p>
+          </details>
+          <details>
+            <summary>Will checking affect website performance or uptime?<svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5v14"/></svg></summary>
+            <p class="sd-faq__a">No. SentinelX executes only a small number (&lt; 10) of standard, polite HTTP HEAD/GET and DNS queries, indistinguishable from a regular visitor opening your homepage in a browser.</p>
+          </details>
+          <details>
+            <summary>What is outside the scope of an exterior check?<svg class="sd-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M5 12h14M12 5v14"/></svg></summary>
+            <p class="sd-faq__a">SentinelX focuses on the perimeter. It does not authenticate with user accounts, crawl pages behind logins, perform exploit attempts, run denial-of-service tests, or access internal mail server infrastructure.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="ftr">
+    <div class="sd-container">
+      <div class="ftr__grid">
+        <div class="ftr__brand">
+          <a href="index.html" aria-label="SentinelX home"><img src="assets/brand/wordmark.svg" alt="SentinelX" width="112" height="32"></a>
+          <p class="ftr__sub">Autonomous exterior posture verification with verifiable evidence and remediation.</p>
+        </div>
+        <nav aria-label="Product">
+          <h2 class="sd-eyebrow">Inspection</h2>
+          <ul role="list">
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="pricing.html">Security Checks</a></li>
+            <li><a href="sample-report.html">Sample report</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="ftr__legal">
+        <p>© 2026 SentinelX. Standalone Domain Security Inspector.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
